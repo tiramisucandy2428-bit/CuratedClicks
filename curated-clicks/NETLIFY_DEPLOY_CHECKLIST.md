@@ -21,7 +21,8 @@ git push -u origin main
 
 ## 3) Build settings
 
-- **Base directory**: *(leave empty)*
+- **Branch to deploy**: `main`
+- **Base directory**: `curated-clicks`
 - **Build command**: `npm run build`
 - **Publish directory**: *(leave empty for Next.js runtime handling)*
 
