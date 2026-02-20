@@ -336,7 +336,7 @@ export default function Home() {
         </p>
       </div>
 
-      <nav className="fixed inset-x-0 bottom-0 z-40 px-4 pb-8 sm:px-8">
+      <nav className="fixed inset-x-0 bottom-0 z-40 px-4 pb-11 sm:px-8 sm:pb-8">
         <div className="mx-auto w-full max-w-5xl">
           <div className="track-line mb-1 h-px w-full" />
           <div className="track-line mb-3 h-px w-full opacity-65" />
@@ -404,7 +404,7 @@ export default function Home() {
         </div>
       </nav>
 
-      <div className="pointer-events-none fixed inset-x-0 bottom-7 z-[45] h-24 overflow-hidden">
+      <div className="pointer-events-none fixed inset-x-0 bottom-10 z-[45] h-24 overflow-hidden sm:bottom-7">
         <div className="forest-row forest-row-one">
           {treePositions.map((position, index) => (
             <div
