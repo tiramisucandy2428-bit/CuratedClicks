@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 
 const sections = [
@@ -13,6 +13,7 @@ const sections = [
 export default function Home() {
   const [isStarted, setIsStarted] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
+  const [isNight, setIsNight] = useState(false);
 
   const trainRef = useRef(null);
   const steamRef = useRef(null);
@@ -56,10 +57,25 @@ export default function Home() {
     setActiveSection(sectionId);
   };
 
+  useEffect(() => {
+    const updateThemeByTime = () => {
+      const hour = new Date().getHours();
+      setIsNight(hour >= 19 || hour < 6);
+    };
+
+    updateThemeByTime();
+    const intervalId = setInterval(updateThemeByTime, 60_000);
+    return () => clearInterval(intervalId);
+  }, []);
+
   const current = sections.find((section) => section.id === activeSection) ?? sections[0];
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-zinc-950 text-zinc-100">
+    <main
+      className={`relative min-h-screen overflow-hidden bg-zinc-950 text-zinc-100 ${
+        isNight ? "scene-night" : "scene-day"
+      }`}
+    >
       <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
         <div className="sky-gradient" />
         <div className="sun-glow" />
@@ -167,10 +183,56 @@ export default function Home() {
       </nav>
 
       <style jsx>{`
+        .scene-day {
+          --sky-top: #1f2130;
+          --sky-mid: #3f2a3a;
+          --sky-horizon: #b4532a;
+          --sky-bottom: #5b2a24;
+          --glow-main: rgba(251, 146, 60, 0.62);
+          --glow-mid: rgba(251, 146, 60, 0.16);
+          --cloud-top: rgba(255, 237, 213, 0.84);
+          --cloud-bottom: rgba(252, 211, 167, 0.56);
+          --cloud-shadow: rgba(24, 24, 27, 0.22);
+          --bird-color: rgba(15, 23, 42, 0.62);
+          --water-back-top: rgba(251, 146, 60, 0.28);
+          --water-back-bottom: rgba(37, 39, 78, 0.62);
+          --water-mid-top: rgba(249, 115, 22, 0.35);
+          --water-mid-bottom: rgba(31, 41, 91, 0.76);
+          --water-front-top: rgba(251, 146, 60, 0.36);
+          --water-front-bottom: rgba(30, 27, 75, 0.9);
+          --water-glint: rgba(254, 215, 170, 0.78);
+        }
+
+        .scene-night {
+          --sky-top: #070b1a;
+          --sky-mid: #111932;
+          --sky-horizon: #2b1f46;
+          --sky-bottom: #140f2c;
+          --glow-main: rgba(186, 230, 253, 0.26);
+          --glow-mid: rgba(186, 230, 253, 0.08);
+          --cloud-top: rgba(191, 219, 254, 0.32);
+          --cloud-bottom: rgba(148, 163, 184, 0.2);
+          --cloud-shadow: rgba(2, 6, 23, 0.34);
+          --bird-color: rgba(226, 232, 240, 0.46);
+          --water-back-top: rgba(59, 130, 246, 0.22);
+          --water-back-bottom: rgba(30, 41, 59, 0.7);
+          --water-mid-top: rgba(37, 99, 235, 0.28);
+          --water-mid-bottom: rgba(23, 37, 84, 0.84);
+          --water-front-top: rgba(56, 189, 248, 0.2);
+          --water-front-bottom: rgba(15, 23, 42, 0.95);
+          --water-glint: rgba(191, 219, 254, 0.58);
+        }
+
         .sky-gradient {
           position: absolute;
           inset: 0;
-          background: linear-gradient(180deg, #1f2130 0%, #3f2a3a 30%, #b4532a 62%, #5b2a24 100%);
+          background: linear-gradient(
+            180deg,
+            var(--sky-top) 0%,
+            var(--sky-mid) 30%,
+            var(--sky-horizon) 62%,
+            var(--sky-bottom) 100%
+          );
         }
 
         .sun-glow {
@@ -180,7 +242,7 @@ export default function Home() {
           width: 260px;
           height: 260px;
           border-radius: 9999px;
-          background: radial-gradient(circle, rgba(251, 146, 60, 0.62) 0%, rgba(251, 146, 60, 0.16) 58%, transparent 75%);
+          background: radial-gradient(circle, var(--glow-main) 0%, var(--glow-mid) 58%, transparent 75%);
           animation: sunPulse 6s ease-in-out infinite;
         }
 
@@ -188,8 +250,8 @@ export default function Home() {
           position: absolute;
           height: 28px;
           border-radius: 9999px;
-          background: linear-gradient(180deg, rgba(255, 237, 213, 0.84) 0%, rgba(252, 211, 167, 0.56) 100%);
-          filter: drop-shadow(0 8px 10px rgba(24, 24, 27, 0.22));
+          background: linear-gradient(180deg, var(--cloud-top) 0%, var(--cloud-bottom) 100%);
+          filter: drop-shadow(0 8px 10px var(--cloud-shadow));
         }
 
         .cloud::before,
@@ -197,7 +259,7 @@ export default function Home() {
         .cloud span {
           position: absolute;
           border-radius: 9999px;
-          background: linear-gradient(180deg, rgba(255, 237, 213, 0.82) 0%, rgba(252, 211, 167, 0.52) 100%);
+          background: linear-gradient(180deg, var(--cloud-top) 0%, var(--cloud-bottom) 100%);
         }
 
         .cloud::before {
@@ -251,8 +313,8 @@ export default function Home() {
           position: absolute;
           width: 20px;
           height: 9px;
-          border-top: 2px solid rgba(15, 23, 42, 0.62);
-          border-right: 2px solid rgba(15, 23, 42, 0.62);
+          border-top: 2px solid var(--bird-color);
+          border-right: 2px solid var(--bird-color);
           border-radius: 90% 90% 0 0;
           transform: rotate(-18deg);
         }
@@ -262,8 +324,8 @@ export default function Home() {
           position: absolute;
           width: 20px;
           height: 9px;
-          border-top: 2px solid rgba(15, 23, 42, 0.62);
-          border-left: 2px solid rgba(15, 23, 42, 0.62);
+          border-top: 2px solid var(--bird-color);
+          border-left: 2px solid var(--bird-color);
           border-radius: 90% 90% 0 0;
         }
 
@@ -280,7 +342,7 @@ export default function Home() {
           width: 8px;
           height: 4px;
           border: 0;
-          background: rgba(15, 23, 42, 0.5);
+          background: var(--bird-color);
           border-radius: 9999px;
         }
 
@@ -315,7 +377,7 @@ export default function Home() {
           bottom: 86px;
           width: 150%;
           height: 280px;
-          background: linear-gradient(180deg, rgba(251, 146, 60, 0.28) 0%, rgba(37, 39, 78, 0.62) 100%);
+          background: linear-gradient(180deg, var(--water-back-top) 0%, var(--water-back-bottom) 100%);
           animation: waveShift 8s ease-in-out infinite;
         }
 
@@ -323,7 +385,7 @@ export default function Home() {
           bottom: 50px;
           width: 170%;
           height: 260px;
-          background: linear-gradient(180deg, rgba(249, 115, 22, 0.35) 0%, rgba(31, 41, 91, 0.76) 100%);
+          background: linear-gradient(180deg, var(--water-mid-top) 0%, var(--water-mid-bottom) 100%);
           animation: waveShift 6.5s ease-in-out infinite reverse;
         }
 
@@ -331,7 +393,7 @@ export default function Home() {
           bottom: 0;
           width: 200%;
           height: 210px;
-          background: linear-gradient(180deg, rgba(251, 146, 60, 0.36) 0%, rgba(30, 27, 75, 0.9) 100%);
+          background: linear-gradient(180deg, var(--water-front-top) 0%, var(--water-front-bottom) 100%);
           animation: waveShift 5.6s ease-in-out infinite;
         }
 
@@ -339,7 +401,7 @@ export default function Home() {
           position: absolute;
           height: 2px;
           border-radius: 9999px;
-          background: linear-gradient(90deg, transparent, rgba(254, 215, 170, 0.78), transparent);
+          background: linear-gradient(90deg, transparent, var(--water-glint), transparent);
           opacity: 0.7;
           animation: glintMove 5s linear infinite;
         }
