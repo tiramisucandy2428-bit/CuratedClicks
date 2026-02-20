@@ -9,11 +9,15 @@ This project now includes:
 Set in Vercel (or Render):
 - `NEXT_PUBLIC_ADSENSE_CLIENT=ca-pub-1603923202565384`
 - `NEXT_PUBLIC_ADSENSE_SLOT_TOP=<your-horizontal-ad-slot-id>`
+- `NEXT_PUBLIC_ADSENSE_SLOT_MOBILE_TOP=<your-mobile-top-ad-slot-id>`
 
 Get `NEXT_PUBLIC_ADSENSE_SLOT_TOP` from AdSense:
 - Ads -> By ad unit -> Display ads -> create a horizontal unit -> copy ad slot ID
 
-This project renders that unit at the top of every page.
+Get `NEXT_PUBLIC_ADSENSE_SLOT_MOBILE_TOP` from AdSense:
+- Ads -> By ad unit -> create a mobile-friendly unit (for example 320x50/responsive) -> copy ad slot ID
+
+This project renders desktop and mobile top units separately to avoid oversized mobile whitespace.
 
 ## Verify after deploy
 
