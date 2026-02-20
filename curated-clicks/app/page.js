@@ -72,9 +72,11 @@ export default function Home() {
         <div className="bird bird-two"><span /></div>
         <div className="bird bird-three"><span /></div>
 
-        <div className="hill hill-back" />
-        <div className="hill hill-mid" />
-        <div className="hill hill-front" />
+        <div className="water water-back" />
+        <div className="water water-mid" />
+        <div className="water water-front" />
+        <div className="water-glint glint-one" />
+        <div className="water-glint glint-two" />
       </div>
 
       <section
@@ -168,7 +170,7 @@ export default function Home() {
         .sky-gradient {
           position: absolute;
           inset: 0;
-          background: linear-gradient(180deg, #75b7ff 0%, #36b6ff 32%, #0b804d 100%);
+          background: linear-gradient(180deg, #7dc4ff 0%, #42bbff 34%, #0b3e74 100%);
         }
 
         .sun-glow {
@@ -302,32 +304,58 @@ export default function Home() {
           animation: birdFly 16s linear infinite 7s;
         }
 
-        .hill {
+        .water {
           position: absolute;
           left: 50%;
           transform: translateX(-50%);
-          border-radius: 50% 50% 0 0;
+          border-radius: 42% 42% 0 0;
         }
 
-        .hill-back {
+        .water-back {
           bottom: 86px;
           width: 150%;
           height: 280px;
-          background: linear-gradient(180deg, rgba(74, 222, 128, 0.85) 0%, rgba(21, 128, 61, 0.9) 100%);
+          background: linear-gradient(180deg, rgba(125, 211, 252, 0.5) 0%, rgba(30, 64, 175, 0.58) 100%);
+          animation: waveShift 8s ease-in-out infinite;
         }
 
-        .hill-mid {
+        .water-mid {
           bottom: 50px;
           width: 170%;
           height: 260px;
-          background: linear-gradient(180deg, rgba(34, 197, 94, 0.95) 0%, rgba(22, 101, 52, 0.95) 100%);
+          background: linear-gradient(180deg, rgba(56, 189, 248, 0.62) 0%, rgba(29, 78, 216, 0.72) 100%);
+          animation: waveShift 6.5s ease-in-out infinite reverse;
         }
 
-        .hill-front {
+        .water-front {
           bottom: 0;
           width: 200%;
           height: 210px;
-          background: linear-gradient(180deg, rgba(22, 163, 74, 0.95) 0%, rgba(21, 94, 40, 0.98) 100%);
+          background: linear-gradient(180deg, rgba(14, 165, 233, 0.78) 0%, rgba(30, 64, 175, 0.9) 100%);
+          animation: waveShift 5.6s ease-in-out infinite;
+        }
+
+        .water-glint {
+          position: absolute;
+          height: 2px;
+          border-radius: 9999px;
+          background: linear-gradient(90deg, transparent, rgba(226, 232, 240, 0.78), transparent);
+          opacity: 0.7;
+          animation: glintMove 5s linear infinite;
+        }
+
+        .glint-one {
+          bottom: 128px;
+          width: 200px;
+          left: 14%;
+          animation-delay: 0.2s;
+        }
+
+        .glint-two {
+          bottom: 98px;
+          width: 160px;
+          left: 62%;
+          animation-delay: 2.4s;
         }
 
         .train-running {
@@ -491,6 +519,33 @@ export default function Home() {
           100% {
             transform: translateX(calc(100vw + 140px)) translateY(6px) scale(0.98) rotate(-18deg);
             opacity: 0.95;
+          }
+        }
+
+        @keyframes waveShift {
+          0%,
+          100% {
+            transform: translateX(-50%) translateY(0);
+          }
+          50% {
+            transform: translateX(-49.2%) translateY(-4px);
+          }
+        }
+
+        @keyframes glintMove {
+          0% {
+            opacity: 0;
+            transform: translateX(-10px);
+          }
+          20% {
+            opacity: 0.8;
+          }
+          80% {
+            opacity: 0.45;
+          }
+          100% {
+            opacity: 0;
+            transform: translateX(34px);
           }
         }
       `}</style>
