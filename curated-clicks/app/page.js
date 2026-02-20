@@ -10,6 +10,8 @@ const sections = [
   { id: "reviews", label: "Reviews", heading: "Trusted Reviews" },
 ];
 
+const treePositions = [2, 9, 15, 23, 30, 38, 45, 52, 60, 67, 74, 82, 89, 97, 104, 112];
+
 export default function Home() {
   const [isStarted, setIsStarted] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
@@ -182,6 +184,34 @@ export default function Home() {
         </div>
       </nav>
 
+      <div className="pointer-events-none fixed inset-x-0 bottom-7 z-[45] h-24 overflow-hidden">
+        <div className="forest-row forest-row-one">
+          {treePositions.map((position, index) => (
+            <div
+              key={`tree-one-${position}`}
+              className={`tree ${index % 3 === 0 ? "tree-lg" : index % 3 === 1 ? "tree-md" : "tree-sm"}`}
+              style={{ left: `${position}%` }}
+            >
+              <span className="tree-crown" />
+              <span className="tree-trunk" />
+            </div>
+          ))}
+        </div>
+
+        <div className="forest-row forest-row-two">
+          {treePositions.map((position, index) => (
+            <div
+              key={`tree-two-${position}`}
+              className={`tree ${index % 2 === 0 ? "tree-md" : "tree-sm"}`}
+              style={{ left: `${position + 4}%` }}
+            >
+              <span className="tree-crown" />
+              <span className="tree-trunk" />
+            </div>
+          ))}
+        </div>
+      </div>
+
       <style jsx>{`
         .scene-day {
           --sky-top: #1f2130;
@@ -201,6 +231,8 @@ export default function Home() {
           --water-front-top: rgba(251, 146, 60, 0.36);
           --water-front-bottom: rgba(30, 27, 75, 0.9);
           --water-glint: rgba(254, 215, 170, 0.78);
+          --tree-crown: rgba(20, 83, 45, 0.92);
+          --tree-trunk: rgba(68, 32, 10, 0.9);
         }
 
         .scene-night {
@@ -221,6 +253,8 @@ export default function Home() {
           --water-front-top: rgba(56, 189, 248, 0.2);
           --water-front-bottom: rgba(15, 23, 42, 0.95);
           --water-glint: rgba(191, 219, 254, 0.58);
+          --tree-crown: rgba(15, 23, 42, 0.92);
+          --tree-trunk: rgba(30, 41, 59, 0.88);
         }
 
         .sky-gradient {
@@ -505,6 +539,79 @@ export default function Home() {
           background: linear-gradient(90deg, rgba(82, 82, 91, 0.2), rgba(161, 161, 170, 0.8), rgba(82, 82, 91, 0.2));
         }
 
+        .forest-row {
+          position: absolute;
+          inset: 0;
+          width: 140%;
+          left: -15%;
+        }
+
+        .forest-row-one {
+          animation: forestSlide 18s linear infinite;
+          opacity: 0.95;
+        }
+
+        .forest-row-two {
+          animation: forestSlide 26s linear infinite;
+          opacity: 0.65;
+          transform: translateY(8px) scale(0.92);
+        }
+
+        .tree {
+          position: absolute;
+          bottom: 0;
+          width: 26px;
+          height: 100%;
+        }
+
+        .tree-crown {
+          position: absolute;
+          bottom: 16px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 0;
+          height: 0;
+          border-left: 13px solid transparent;
+          border-right: 13px solid transparent;
+          border-bottom: 38px solid var(--tree-crown);
+          filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.35));
+        }
+
+        .tree-crown::after {
+          content: "";
+          position: absolute;
+          left: -10px;
+          top: 16px;
+          width: 0;
+          height: 0;
+          border-left: 10px solid transparent;
+          border-right: 10px solid transparent;
+          border-bottom: 24px solid var(--tree-crown);
+        }
+
+        .tree-trunk {
+          position: absolute;
+          bottom: 0;
+          left: 50%;
+          width: 5px;
+          height: 18px;
+          transform: translateX(-50%);
+          background: var(--tree-trunk);
+          border-radius: 2px;
+        }
+
+        .tree-lg {
+          transform: scale(1.08);
+        }
+
+        .tree-md {
+          transform: scale(0.92);
+        }
+
+        .tree-sm {
+          transform: scale(0.78);
+        }
+
         .steam-one {
           animation: steamRise 1.5s ease-out infinite;
         }
@@ -608,6 +715,15 @@ export default function Home() {
           100% {
             opacity: 0;
             transform: translateX(34px);
+          }
+        }
+
+        @keyframes forestSlide {
+          0% {
+            transform: translateX(0);
+          }
+          100% {
+            transform: translateX(-16%);
           }
         }
       `}</style>
