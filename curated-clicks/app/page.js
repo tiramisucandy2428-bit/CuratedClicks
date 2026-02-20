@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { BLOG_CATEGORIES, getBlogs, getProducts } from "@/app/lib/contentStore";
 
+const URL_REGEX = /(https?:\/\/[^\s]+)/g;
+
 const sections = [
   { id: "home", label: "Home", heading: "Welcome Home" },
   { id: "blog", label: "Blog", heading: "Latest Clicks" },
@@ -119,6 +121,37 @@ export default function Home() {
     : [];
   const openedBlog = openedBlogId ? blogsByNewest.find((blog) => blog.id === openedBlogId) : null;
 
+  const renderBlogTextWithLinks = (text) => {
+    if (!text) return null;
+
+    return text.split("\n").map((line, lineIndex) => {
+      const tokens = line.split(URL_REGEX);
+
+      return (
+        <p key={`line-${lineIndex}`} className="mt-2 text-base leading-relaxed text-zinc-200/95">
+          {tokens.map((token, tokenIndex) => {
+            const isUrl = token.match(URL_REGEX);
+            if (!isUrl) {
+              return <span key={`text-${lineIndex}-${tokenIndex}`}>{token}</span>;
+            }
+
+            return (
+              <a
+                key={`link-${lineIndex}-${tokenIndex}`}
+                href={token}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline decoration-zinc-300/70 underline-offset-2 hover:text-amber-300"
+              >
+                {token}
+              </a>
+            );
+          })}
+        </p>
+      );
+    });
+  };
+
   return (
     <main
       className={`relative min-h-screen overflow-hidden bg-zinc-950 text-zinc-100 ${
@@ -206,17 +239,12 @@ export default function Home() {
                         setOpenedBlogId(null);
                       }}
                       className={`rounded-lg border border-zinc-300/20 bg-black/25 p-4 text-left backdrop-blur-[1px] blog-float blog-float-${index + 1} transition hover:brightness-110 ${
-                        card.latest ? "" : "opacity-85"
+                        card.count > 0 ? "" : "opacity-85"
                       }`}
                     >
                       <p className="text-[11px] uppercase tracking-widest text-amber-300">{card.category}</p>
-                      <h3 className="mt-1 text-base font-semibold text-zinc-100">
-                        {card.latest ? card.latest.title : "No posts yet"}
-                      </h3>
-                      <p className="mt-1 text-sm text-zinc-200/90">
-                        {card.latest ? card.latest.excerpt : "Fresh blog updates in this category will appear here."}
-                      </p>
-                      <p className="mt-2 text-xs text-zinc-300/80">{card.count} post{card.count === 1 ? "" : "s"}</p>
+                      <p className="mt-2 text-3xl font-bold text-zinc-100">{card.count}</p>
+                      <p className="mt-1 text-xs text-zinc-300/80">post{card.count === 1 ? "" : "s"}</p>
                     </button>
                   ))}
                 </div>
@@ -268,7 +296,7 @@ export default function Home() {
                     </button>
                   </div>
                   <h3 className="text-2xl font-semibold text-zinc-100">{openedBlog.title}</h3>
-                  <p className="mt-3 text-base leading-relaxed text-zinc-200/95">{openedBlog.excerpt}</p>
+                  <div className="mt-3">{renderBlogTextWithLinks(openedBlog.excerpt)}</div>
                 </article>
               )}
             </div>
