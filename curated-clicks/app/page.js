@@ -5,6 +5,24 @@ import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { BLOG_CATEGORIES, getBlogs, getProducts } from "@/app/lib/contentStore";
 
+const encodeBlogForShare = (blog) => {
+  try {
+    return window.btoa(
+      encodeURIComponent(
+        JSON.stringify({
+          id: blog.id,
+          title: blog.title,
+          excerpt: blog.excerpt,
+          category: blog.category,
+          blogUrl: blog.blogUrl,
+        })
+      )
+    );
+  } catch {
+    return "";
+  }
+};
+
 const sections = [
   { id: "home", label: "Home", heading: "Welcome Home" },
   { id: "blog", label: "Blog", heading: "Latest Clicks" },
@@ -231,7 +249,7 @@ export default function Home() {
                       {selectedCategoryBlogs.map((blog) => (
                         <Link
                           key={`heading-${blog.id}`}
-                          href={`/blog/${blog.id}`}
+                          href={`/blog/${blog.id}?data=${encodeURIComponent(encodeBlogForShare(blog))}`}
                           className="rounded-lg border border-zinc-300/20 bg-black/25 p-4 text-left backdrop-blur-[1px] transition hover:brightness-110"
                         >
                           <h3 className="text-base font-semibold text-zinc-100">{blog.title}</h3>

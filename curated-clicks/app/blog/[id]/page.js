@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { getBlogs } from "@/app/lib/contentStore";
 
 const URL_REGEX = /(https?:\/\/[^\s]+|www\.[^\s]+)/g;
@@ -16,6 +16,7 @@ const normalizeExternalUrl = (value) => {
 
 export default function BlogPostPage() {
   const params = useParams();
+  const searchParams = useSearchParams();
   const [blogs, setBlogs] = useState([]);
 
   useEffect(() => {
@@ -33,11 +34,58 @@ export default function BlogPostPage() {
     };
   }, []);
 
-  const blog = useMemo(() => blogs.find((item) => item.id === params?.id), [blogs, params?.id]);
+  const sharedBlog = useMemo(() => {
+    const raw = searchParams.get("data");
+    if (!raw) return null;
+
+    try {
+      const decoded = decodeURIComponent(window.atob(raw));
+      const parsed = JSON.parse(decoded);
+      if (!parsed?.title || !parsed?.excerpt) {
+        return null;
+      }
+
+      return {
+        id: parsed.id || params?.id,
+        title: parsed.title,
+        excerpt: parsed.excerpt,
+        category: parsed.category || "Seasonal",
+        blogUrl: parsed.blogUrl || "",
+      };
+    } catch {
+      return null;
+    }
+  }, [params?.id, searchParams]);
+
+  const blog = useMemo(() => {
+    const local = blogs.find((item) => item.id === params?.id);
+    return local || sharedBlog;
+  }, [blogs, params?.id, sharedBlog]);
+
+  const buildShareUrl = () => {
+    if (!blog) return window.location.href;
+
+    try {
+      const encoded = window.btoa(
+        encodeURIComponent(
+          JSON.stringify({
+            id: blog.id,
+            title: blog.title,
+            excerpt: blog.excerpt,
+            category: blog.category,
+            blogUrl: blog.blogUrl,
+          })
+        )
+      );
+      return `${window.location.origin}/blog/${blog.id}?data=${encodeURIComponent(encoded)}`;
+    } catch {
+      return window.location.href;
+    }
+  };
 
   const copyShareLink = async () => {
     try {
-      await navigator.clipboard.writeText(window.location.href);
+      await navigator.clipboard.writeText(buildShareUrl());
       alert("Post link copied.");
     } catch {
       alert("Could not copy link.");
