@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
-import { getBlogs, getProducts } from "@/app/lib/contentStore";
+import { BLOG_CATEGORIES, getBlogs, getProducts } from "@/app/lib/contentStore";
 
 const sections = [
   { id: "home", label: "Home", heading: "Welcome Home" },
@@ -91,16 +91,20 @@ export default function Home() {
   }, []);
 
   const current = sections.find((section) => section.id === activeSection) ?? sections[0];
-  const floatingBlogCards = [...blogs].slice(0, 4);
+  const blogsByNewest = [...blogs].sort((first, second) => (second.createdAt || 0) - (first.createdAt || 0));
+  const pinnedBlogs = blogsByNewest.filter((blog) => blog.pinned).slice(0, 4);
+  const latestBlogs = blogsByNewest.slice(0, 4);
+  const categoryCards = BLOG_CATEGORIES.map((category) => {
+    const matchingBlogs = blogsByNewest.filter((blog) => (blog.category || "Seasonal") === category);
+    const latestByCategory = matchingBlogs[0] || null;
 
-  while (floatingBlogCards.length < 4) {
-    floatingBlogCards.push({
-      id: `blog-placeholder-${floatingBlogCards.length + 1}`,
-      title: "More clicks coming soon",
-      excerpt: "Fresh blog updates will appear here.",
-      isPlaceholder: true,
-    });
-  }
+    return {
+      id: `category-${category}`,
+      category,
+      count: matchingBlogs.length,
+      latest: latestByCategory,
+    };
+  });
 
   return (
     <main
@@ -138,17 +142,61 @@ export default function Home() {
             {current.heading}
           </h1>
 
+          {activeSection === "home" ? (
+            <div className="mt-8 space-y-6 text-left">
+              <section>
+                <h2 className="mb-3 text-lg font-semibold text-amber-300">Pinned Blogs</h2>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {pinnedBlogs.length > 0 ? (
+                    pinnedBlogs.map((blog) => (
+                      <article key={blog.id} className="rounded-lg border border-zinc-300/20 bg-black/25 p-4 backdrop-blur-[1px]">
+                        <p className="text-[11px] uppercase tracking-widest text-amber-300">{blog.category || "Seasonal"}</p>
+                        <h3 className="mt-1 text-base font-semibold text-zinc-100">{blog.title}</h3>
+                        <p className="mt-1 text-sm text-zinc-200/90">{blog.excerpt}</p>
+                      </article>
+                    ))
+                  ) : (
+                    <p className="text-sm text-zinc-200/85">No pinned blogs yet.</p>
+                  )}
+                </div>
+              </section>
+
+              <section>
+                <h2 className="mb-3 text-lg font-semibold text-amber-300">Latest Blogs</h2>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {latestBlogs.length > 0 ? (
+                    latestBlogs.map((blog) => (
+                      <article key={`latest-${blog.id}`} className="rounded-lg border border-zinc-300/20 bg-black/25 p-4 backdrop-blur-[1px]">
+                        <p className="text-[11px] uppercase tracking-widest text-amber-300">{blog.category || "Seasonal"}</p>
+                        <h3 className="mt-1 text-base font-semibold text-zinc-100">{blog.title}</h3>
+                        <p className="mt-1 text-sm text-zinc-200/90">{blog.excerpt}</p>
+                      </article>
+                    ))
+                  ) : (
+                    <p className="text-sm text-zinc-200/85">No latest blogs yet.</p>
+                  )}
+                </div>
+              </section>
+            </div>
+          ) : null}
+
           {activeSection === "blog" ? (
             <div className="mt-8 grid gap-3 sm:grid-cols-2">
-              {floatingBlogCards.map((blog, index) => (
+              {categoryCards.map((card, index) => (
                 <article
-                  key={blog.id}
+                  key={card.id}
                   className={`rounded-lg border border-zinc-300/20 bg-black/25 p-4 text-left backdrop-blur-[1px] blog-float blog-float-${index + 1} ${
-                    blog.isPlaceholder ? "opacity-85" : ""
+                    card.latest ? "" : "opacity-85"
                   }`}
                 >
-                  <h3 className="text-base font-semibold text-zinc-100">{blog.title}</h3>
-                  <p className="mt-1 text-sm text-zinc-200/90">{blog.excerpt}</p>
+                  <p className="text-[11px] uppercase tracking-widest text-amber-300">{card.category}</p>
+                  <h3 className="mt-1 text-base font-semibold text-zinc-100">
+                    {card.latest ? card.latest.title : "No posts yet"}
+                  </h3>
+                  <p className="mt-1 text-sm text-zinc-200/90">
+                    {card.latest ? card.latest.excerpt : "Fresh blog updates in this category will appear here."}
+                  </p>
+                  <p className="mt-2 text-xs text-zinc-300/80">{card.count} post{card.count === 1 ? "" : "s"}</p>
                 </article>
               ))}
             </div>

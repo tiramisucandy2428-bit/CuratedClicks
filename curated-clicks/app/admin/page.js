@@ -3,14 +3,16 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
-  addBlog,
+  addBlogWithMeta,
   addProduct,
+  BLOG_CATEGORIES,
   deleteBlog,
   deleteProduct,
   getBlogs,
   getProducts,
   isAdminLoggedIn,
   logoutAdmin,
+  toggleBlogPin,
 } from "@/app/lib/contentStore";
 
 export default function AdminDashboardPage() {
@@ -21,6 +23,8 @@ export default function AdminDashboardPage() {
 
   const [blogTitle, setBlogTitle] = useState("");
   const [blogExcerpt, setBlogExcerpt] = useState("");
+  const [blogCategory, setBlogCategory] = useState(BLOG_CATEGORIES[0]);
+  const [blogPinned, setBlogPinned] = useState(false);
 
   const [productName, setProductName] = useState("");
   const [productDescription, setProductDescription] = useState("");
@@ -40,9 +44,11 @@ export default function AdminDashboardPage() {
 
   const createBlog = (event) => {
     event.preventDefault();
-    setBlogs(addBlog(blogTitle.trim(), blogExcerpt.trim()));
+    setBlogs(addBlogWithMeta(blogTitle.trim(), blogExcerpt.trim(), blogCategory, blogPinned));
     setBlogTitle("");
     setBlogExcerpt("");
+    setBlogCategory(BLOG_CATEGORIES[0]);
+    setBlogPinned(false);
   };
 
   const createProduct = (event) => {
@@ -100,6 +106,25 @@ export default function AdminDashboardPage() {
                 onChange={(event) => setBlogExcerpt(event.target.value)}
                 required
               />
+              <select
+                className="w-full rounded-md border border-zinc-700 bg-zinc-950 px-3 py-2"
+                value={blogCategory}
+                onChange={(event) => setBlogCategory(event.target.value)}
+              >
+                {BLOG_CATEGORIES.map((category) => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
+              </select>
+              <label className="flex items-center gap-2 text-sm text-zinc-300">
+                <input
+                  type="checkbox"
+                  checked={blogPinned}
+                  onChange={(event) => setBlogPinned(event.target.checked)}
+                />
+                Pin this blog on home page
+              </label>
               <button className="rounded-md bg-amber-500 px-4 py-2 font-semibold text-zinc-950 hover:bg-amber-400">Add Blog</button>
             </form>
 
@@ -107,7 +132,14 @@ export default function AdminDashboardPage() {
               {blogs.map((blog) => (
                 <li key={blog.id} className="rounded-md border border-zinc-700 p-3">
                   <p className="font-semibold">{blog.title}</p>
+                  <p className="mt-1 text-xs text-amber-300">{blog.category || "Seasonal"}</p>
                   <p className="mt-1 text-sm text-zinc-400">{blog.excerpt}</p>
+                  <button
+                    onClick={() => setBlogs(toggleBlogPin(blog.id))}
+                    className="mt-2 mr-3 text-sm text-sky-300 hover:text-sky-200"
+                  >
+                    {blog.pinned ? "Unpin" : "Pin"}
+                  </button>
                   <button
                     onClick={() => setBlogs(deleteBlog(blog.id))}
                     className="mt-2 text-sm text-rose-400 hover:text-rose-300"

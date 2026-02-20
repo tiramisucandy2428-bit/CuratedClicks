@@ -1,9 +1,18 @@
 const CONTENT_KEY = "curated-clicks-content";
 const ADMIN_SESSION_KEY = "curated-clicks-admin-session";
 
+export const BLOG_CATEGORIES = ["Home Decors", "Gaming", "AI tools", "Seasonal"];
+
 const DEFAULT_CONTENT = {
   blogs: [
-    { id: "b-1", title: "Welcome to Curated Clicks", excerpt: "Fresh updates and curated stories live here." },
+    {
+      id: "b-1",
+      title: "Welcome to Curated Clicks",
+      excerpt: "Fresh updates and curated stories live here.",
+      category: "Seasonal",
+      pinned: false,
+      createdAt: 1739980800000,
+    },
   ],
   products: [],
 };
@@ -26,6 +35,15 @@ function readContent() {
 
   try {
     const parsed = JSON.parse(raw);
+    const normalizedBlogs = Array.isArray(parsed.blogs)
+      ? parsed.blogs.map((blog) => ({
+          ...blog,
+          category: BLOG_CATEGORIES.includes(blog.category) ? blog.category : "Seasonal",
+          pinned: Boolean(blog.pinned),
+          createdAt: Number(blog.createdAt) || Number(blog.id?.replace("b-", "")) || Date.now(),
+        }))
+      : DEFAULT_CONTENT.blogs;
+
     const normalizedProducts = Array.isArray(parsed.products)
       ? parsed.products.map((product) => ({
           ...product,
@@ -35,7 +53,7 @@ function readContent() {
       : DEFAULT_CONTENT.products;
 
     return {
-      blogs: Array.isArray(parsed.blogs) ? parsed.blogs : DEFAULT_CONTENT.blogs,
+      blogs: normalizedBlogs,
       products: normalizedProducts,
     };
   } catch {
@@ -60,11 +78,33 @@ export function getProducts() {
 
 export function addBlog(title, excerpt) {
   const content = readContent();
+  const createdAt = Date.now();
   content.blogs = [
     {
-      id: `b-${Date.now()}`,
+      id: `b-${createdAt}`,
       title,
       excerpt,
+      category: "Seasonal",
+      pinned: false,
+      createdAt,
+    },
+    ...content.blogs,
+  ];
+  writeContent(content);
+  return content.blogs;
+}
+
+export function addBlogWithMeta(title, excerpt, category, pinned) {
+  const content = readContent();
+  const createdAt = Date.now();
+  content.blogs = [
+    {
+      id: `b-${createdAt}`,
+      title,
+      excerpt,
+      category: BLOG_CATEGORIES.includes(category) ? category : "Seasonal",
+      pinned: Boolean(pinned),
+      createdAt,
     },
     ...content.blogs,
   ];
@@ -92,6 +132,20 @@ export function addProduct(name, description, price, productUrl, imageUrl) {
 export function deleteBlog(id) {
   const content = readContent();
   content.blogs = content.blogs.filter((blog) => blog.id !== id);
+  writeContent(content);
+  return content.blogs;
+}
+
+export function toggleBlogPin(id) {
+  const content = readContent();
+  content.blogs = content.blogs.map((blog) =>
+    blog.id === id
+      ? {
+          ...blog,
+          pinned: !blog.pinned,
+        }
+      : blog
+  );
   writeContent(content);
   return content.blogs;
 }
