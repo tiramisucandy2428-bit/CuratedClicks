@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
+import { getBlogs, getProducts } from "@/app/lib/contentStore";
 
 const sections = [
   { id: "home", label: "Home", heading: "Welcome Home" },
@@ -16,6 +17,8 @@ export default function Home() {
   const [isStarted, setIsStarted] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
   const [isNight, setIsNight] = useState(false);
+  const [blogs, setBlogs] = useState([]);
+  const [products, setProducts] = useState([]);
 
   const trainRef = useRef(null);
   const steamRef = useRef(null);
@@ -70,6 +73,23 @@ export default function Home() {
     return () => clearInterval(intervalId);
   }, []);
 
+  useEffect(() => {
+    const loadData = () => {
+      setBlogs(getBlogs());
+      setProducts(getProducts());
+    };
+
+    loadData();
+    const onStorage = () => loadData();
+    const onContentUpdated = () => loadData();
+    window.addEventListener("storage", onStorage);
+    window.addEventListener("curated-clicks-content-updated", onContentUpdated);
+    return () => {
+      window.removeEventListener("storage", onStorage);
+      window.removeEventListener("curated-clicks-content-updated", onContentUpdated);
+    };
+  }, []);
+
   const current = sections.find((section) => section.id === activeSection) ?? sections[0];
 
   return (
@@ -103,10 +123,48 @@ export default function Home() {
           isStarted ? "blur-0 scale-100" : "blur-sm scale-[0.98]"
         }`}
       >
-        <h1 className="text-center text-4xl font-semibold tracking-wide text-zinc-100 drop-shadow-[0_8px_24px_rgba(0,0,0,0.45)] sm:text-6xl">
-          {current.heading}
-        </h1>
+        <div className="w-full max-w-5xl text-center">
+          <h1 className="text-center text-4xl font-semibold tracking-wide text-zinc-100 drop-shadow-[0_8px_24px_rgba(0,0,0,0.45)] sm:text-6xl">
+            {current.heading}
+          </h1>
+
+          {activeSection === "blog" ? (
+            <div className="mt-8 grid gap-3 sm:grid-cols-2">
+              {blogs.map((blog) => (
+                <article key={blog.id} className="rounded-lg border border-zinc-300/20 bg-black/25 p-4 text-left backdrop-blur-[1px]">
+                  <h3 className="text-base font-semibold text-zinc-100">{blog.title}</h3>
+                  <p className="mt-1 text-sm text-zinc-200/90">{blog.excerpt}</p>
+                </article>
+              ))}
+            </div>
+          ) : null}
+
+          {activeSection === "products" ? (
+            <div className="mt-8 grid gap-3 sm:grid-cols-2">
+              {products.map((product) => (
+                <article key={product.id} className="rounded-lg border border-zinc-300/20 bg-black/25 p-4 text-left backdrop-blur-[1px]">
+                  <h3 className="text-base font-semibold text-zinc-100">{product.name}</h3>
+                  <p className="mt-1 text-sm text-zinc-200/90">{product.description}</p>
+                  <p className="mt-2 text-sm font-semibold text-amber-300">{product.price}</p>
+                </article>
+              ))}
+            </div>
+          ) : null}
+
+          {activeSection === "contact" ? (
+            <p className="mx-auto mt-6 max-w-xl text-sm text-zinc-100/90 sm:text-base">
+              Reach us for collaborations, product inquiries, and partnerships at contact@curatedclicks.com.
+            </p>
+          ) : null}
+        </div>
       </section>
+
+      <a
+        href="/admin/login"
+        className="absolute right-4 top-4 z-50 rounded-md border border-zinc-400/30 bg-black/35 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-zinc-200 backdrop-blur-sm hover:bg-black/50"
+      >
+        Admin
+      </a>
 
       <div
         ref={overlayRef}
