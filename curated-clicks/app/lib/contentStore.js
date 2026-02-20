@@ -10,8 +10,8 @@ const DEFAULT_CONTENT = {
   ],
 };
 
-const ADMIN_USERNAME = "admin";
-const ADMIN_PASSWORD = "curated123";
+const ADMIN_USERNAME = "curatedcliks";
+const ADMIN_PASSWORD = "9065238298@Cu";
 
 function hasWindow() {
   return typeof window !== "undefined";

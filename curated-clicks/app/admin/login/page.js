@@ -58,7 +58,7 @@ export default function AdminLoginPage() {
           Sign In
         </button>
 
-        <p className="mt-3 text-xs text-zinc-500">Default demo credentials: admin / curated123</p>
+        <p className="mt-3 text-xs text-zinc-500">Default demo credentials: curatedcliks / 9065238298@Cu</p>
       </form>
     </main>
   );
