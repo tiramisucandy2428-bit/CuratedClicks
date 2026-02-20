@@ -91,6 +91,16 @@ export default function Home() {
   }, []);
 
   const current = sections.find((section) => section.id === activeSection) ?? sections[0];
+  const floatingBlogCards = [...blogs].slice(0, 4);
+
+  while (floatingBlogCards.length < 4) {
+    floatingBlogCards.push({
+      id: `blog-placeholder-${floatingBlogCards.length + 1}`,
+      title: "More clicks coming soon",
+      excerpt: "Fresh blog updates will appear here.",
+      isPlaceholder: true,
+    });
+  }
 
   return (
     <main
@@ -130,8 +140,13 @@ export default function Home() {
 
           {activeSection === "blog" ? (
             <div className="mt-8 grid gap-3 sm:grid-cols-2">
-              {blogs.map((blog) => (
-                <article key={blog.id} className="rounded-lg border border-zinc-300/20 bg-black/25 p-4 text-left backdrop-blur-[1px]">
+              {floatingBlogCards.map((blog, index) => (
+                <article
+                  key={blog.id}
+                  className={`rounded-lg border border-zinc-300/20 bg-black/25 p-4 text-left backdrop-blur-[1px] blog-float blog-float-${index + 1} ${
+                    blog.isPlaceholder ? "opacity-85" : ""
+                  }`}
+                >
                   <h3 className="text-base font-semibold text-zinc-100">{blog.title}</h3>
                   <p className="mt-1 text-sm text-zinc-200/90">{blog.excerpt}</p>
                 </article>
@@ -736,6 +751,27 @@ export default function Home() {
           animation: steamRise 1.5s ease-out infinite 0.75s;
         }
 
+        .blog-float {
+          animation: blogFloat 4.8s ease-in-out infinite;
+          will-change: transform;
+        }
+
+        .blog-float-1 {
+          animation-delay: 0s;
+        }
+
+        .blog-float-2 {
+          animation-delay: 0.6s;
+        }
+
+        .blog-float-3 {
+          animation-delay: 1.2s;
+        }
+
+        .blog-float-4 {
+          animation-delay: 1.8s;
+        }
+
         @keyframes wheelSpin {
           from {
             transform: rotate(0deg);
@@ -840,6 +876,16 @@ export default function Home() {
           }
           100% {
             transform: translateX(16%);
+          }
+        }
+
+        @keyframes blogFloat {
+          0%,
+          100% {
+            transform: translateY(0);
+          }
+          50% {
+            transform: translateY(-8px);
           }
         }
       `}</style>
