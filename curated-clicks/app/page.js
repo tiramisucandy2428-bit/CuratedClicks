@@ -196,10 +196,14 @@ export default function Home() {
                 <div className="grid gap-3 sm:grid-cols-2">
                   {latestBlogs.length > 0 ? (
                     latestBlogs.map((blog) => (
-                      <article key={`latest-${blog.id}`} className="rounded-lg border border-zinc-300/20 bg-black/25 p-4 backdrop-blur-[1px]">
+                      <Link
+                        key={`latest-${blog.id}`}
+                        href={`/blog/${blog.id}`}
+                        className="block rounded-lg border border-zinc-300/20 bg-black/25 p-4 backdrop-blur-[1px] transition hover:brightness-110"
+                      >
                         <p className="text-[11px] uppercase tracking-widest text-amber-300">{blog.category || "Seasonal"}</p>
                         <h3 className="mt-1 text-base font-semibold text-zinc-100">{blog.title}</h3>
-                      </article>
+                      </Link>
                     ))
                   ) : (
                     <p className="text-sm text-zinc-200/85">No latest blogs yet.</p>
