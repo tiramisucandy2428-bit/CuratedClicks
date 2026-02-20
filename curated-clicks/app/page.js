@@ -479,6 +479,15 @@ export default function Home() {
           background: radial-gradient(circle at 35% 35%, rgb(82 82 91), rgb(24 24 27));
           box-shadow: inset 0 0 0 2px rgb(63 63 70), 0 2px 2px rgba(0, 0, 0, 0.35);
           animation: wheelSpin 0.7s linear infinite;
+          z-index: -1;
+        }
+
+        .engine-body,
+        .engine-active,
+        .car-body,
+        .car-active {
+          z-index: 2;
+          isolation: isolate;
         }
 
         .wheel::after {
