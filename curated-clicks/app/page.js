@@ -1,17 +1,9 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { BLOG_CATEGORIES, getBlogs, getProducts } from "@/app/lib/contentStore";
-
-const URL_REGEX = /(https?:\/\/[^\s]+|www\.[^\s]+)/g;
-
-const normalizeExternalUrl = (value) => {
-  if (!value) return "";
-  const trimmed = value.trim();
-  if (!trimmed) return "";
-  return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
-};
 
 const sections = [
   { id: "home", label: "Home", heading: "Welcome Home" },
@@ -29,7 +21,6 @@ export default function Home() {
   const [blogs, setBlogs] = useState([]);
   const [products, setProducts] = useState([]);
   const [selectedBlogCategory, setSelectedBlogCategory] = useState(null);
-  const [openedBlogId, setOpenedBlogId] = useState(null);
 
   const trainRef = useRef(null);
   const steamRef = useRef(null);
@@ -104,7 +95,6 @@ export default function Home() {
   useEffect(() => {
     if (activeSection !== "blog") {
       setSelectedBlogCategory(null);
-      setOpenedBlogId(null);
     }
   }, [activeSection]);
 
@@ -126,38 +116,6 @@ export default function Home() {
   const selectedCategoryBlogs = selectedBlogCategory
     ? blogsByNewest.filter((blog) => (blog.category || "Seasonal") === selectedBlogCategory)
     : [];
-  const openedBlog = openedBlogId ? blogsByNewest.find((blog) => blog.id === openedBlogId) : null;
-
-  const renderBlogTextWithLinks = (text) => {
-    if (!text) return null;
-
-    return text.split("\n").map((line, lineIndex) => {
-      const tokens = line.split(URL_REGEX);
-
-      return (
-        <p key={`line-${lineIndex}`} className="mt-2 text-base leading-relaxed text-zinc-200/95">
-          {tokens.map((token, tokenIndex) => {
-            const isUrl = token.match(URL_REGEX);
-            if (!isUrl) {
-              return <span key={`text-${lineIndex}-${tokenIndex}`}>{token}</span>;
-            }
-
-            return (
-              <a
-                key={`link-${lineIndex}-${tokenIndex}`}
-                href={normalizeExternalUrl(token)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline decoration-zinc-300/70 underline-offset-2 hover:text-amber-300"
-              >
-                {token}
-              </a>
-            );
-          })}
-        </p>
-      );
-    });
-  };
 
   return (
     <main
@@ -222,7 +180,6 @@ export default function Home() {
                       <article key={`latest-${blog.id}`} className="rounded-lg border border-zinc-300/20 bg-black/25 p-4 backdrop-blur-[1px]">
                         <p className="text-[11px] uppercase tracking-widest text-amber-300">{blog.category || "Seasonal"}</p>
                         <h3 className="mt-1 text-base font-semibold text-zinc-100">{blog.title}</h3>
-                        <p className="mt-1 text-sm text-zinc-200/90">{blog.excerpt}</p>
                       </article>
                     ))
                   ) : (
@@ -243,7 +200,6 @@ export default function Home() {
                       type="button"
                       onClick={() => {
                         setSelectedBlogCategory(card.category);
-                        setOpenedBlogId(null);
                       }}
                       className={`rounded-lg border border-zinc-300/20 bg-black/25 p-4 text-left backdrop-blur-[1px] blog-float blog-float-${index + 1} transition hover:brightness-110 ${
                         card.count > 0 ? "" : "opacity-85"
@@ -255,7 +211,7 @@ export default function Home() {
                     </button>
                   ))}
                 </div>
-              ) : !openedBlog ? (
+              ) : (
                 <div>
                   <div className="mb-4 flex items-center justify-between gap-3">
                     <h2 className="text-lg font-semibold text-amber-300">{selectedBlogCategory}</h2>
@@ -263,7 +219,6 @@ export default function Home() {
                       type="button"
                       onClick={() => {
                         setSelectedBlogCategory(null);
-                        setOpenedBlogId(null);
                       }}
                       className="rounded-md border border-zinc-500/70 bg-black/25 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-zinc-100 hover:bg-black/40"
                     >
@@ -274,47 +229,19 @@ export default function Home() {
                   {selectedCategoryBlogs.length > 0 ? (
                     <div className="grid gap-3 sm:grid-cols-2">
                       {selectedCategoryBlogs.map((blog) => (
-                        <button
+                        <Link
                           key={`heading-${blog.id}`}
-                          type="button"
-                          onClick={() => setOpenedBlogId(blog.id)}
+                          href={`/blog/${blog.id}`}
                           className="rounded-lg border border-zinc-300/20 bg-black/25 p-4 text-left backdrop-blur-[1px] transition hover:brightness-110"
                         >
                           <h3 className="text-base font-semibold text-zinc-100">{blog.title}</h3>
-                        </button>
+                        </Link>
                       ))}
                     </div>
                   ) : (
                     <p className="text-sm text-zinc-200/85">No blog posts in this category yet.</p>
                   )}
                 </div>
-              ) : (
-                <article className="mx-auto max-w-3xl rounded-lg border border-zinc-300/20 bg-black/25 p-5 backdrop-blur-[1px]">
-                  <div className="mb-4 flex items-center justify-between gap-3">
-                    <p className="text-[11px] uppercase tracking-widest text-amber-300">
-                      {openedBlog.category || "Seasonal"}
-                    </p>
-                    <button
-                      type="button"
-                      onClick={() => setOpenedBlogId(null)}
-                      className="rounded-md border border-zinc-500/70 bg-black/25 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-zinc-100 hover:bg-black/40"
-                    >
-                      Back to Headings
-                    </button>
-                  </div>
-                  <h3 className="text-2xl font-semibold text-zinc-100">{openedBlog.title}</h3>
-                  <div className="mt-3">{renderBlogTextWithLinks(openedBlog.excerpt)}</div>
-                  {openedBlog.blogUrl ? (
-                    <a
-                      href={normalizeExternalUrl(openedBlog.blogUrl)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="mt-4 inline-block rounded-md bg-amber-500 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-zinc-950 hover:bg-amber-400"
-                    >
-                      Open Blog Link
-                    </a>
-                  ) : null}
-                </article>
               )}
             </div>
           ) : null}
