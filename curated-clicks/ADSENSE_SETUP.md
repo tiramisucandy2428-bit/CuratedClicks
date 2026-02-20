@@ -3,21 +3,20 @@
 This project now includes:
 - Global AdSense script in app layout
 - `public/ads.txt`
+- Blog-page-only ad placements (left, right, and bottom)
 
 ## Required environment variable
 
 Set in Vercel (or Render):
 - `NEXT_PUBLIC_ADSENSE_CLIENT=ca-pub-1603923202565384`
-- `NEXT_PUBLIC_ADSENSE_SLOT_TOP=<your-horizontal-ad-slot-id>`
-- `NEXT_PUBLIC_ADSENSE_SLOT_MOBILE_TOP=<your-mobile-top-ad-slot-id>`
+- `NEXT_PUBLIC_ADSENSE_SLOT_BLOG_SIDE=<your-blog-side-ad-slot-id>`
+- `NEXT_PUBLIC_ADSENSE_SLOT_BLOG_BOTTOM=<your-blog-bottom-ad-slot-id>`
 
-Get `NEXT_PUBLIC_ADSENSE_SLOT_TOP` from AdSense:
-- Ads -> By ad unit -> Display ads -> create a horizontal unit -> copy ad slot ID
+Get slot IDs from AdSense:
+- Ads -> By ad unit -> create a vertical unit (for side ads) and copy slot ID
+- Ads -> By ad unit -> create a horizontal unit (for bottom ad) and copy slot ID
 
-Get `NEXT_PUBLIC_ADSENSE_SLOT_MOBILE_TOP` from AdSense:
-- Ads -> By ad unit -> create a mobile-friendly unit (for example 320x50/responsive) -> copy ad slot ID
-
-This project renders desktop and mobile top units separately to avoid oversized mobile whitespace.
+Main homepage ad is removed. Ads now render only on opened blog pages.
 
 ## Verify after deploy
 

@@ -5,6 +5,9 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 
 const URL_REGEX = /(https?:\/\/[^\s]+|www\.[^\s]+)/g;
+const adClient = process.env.NEXT_PUBLIC_ADSENSE_CLIENT;
+const blogSideAdSlot = process.env.NEXT_PUBLIC_ADSENSE_SLOT_BLOG_SIDE || process.env.NEXT_PUBLIC_ADSENSE_SLOT_TOP;
+const blogBottomAdSlot = process.env.NEXT_PUBLIC_ADSENSE_SLOT_BLOG_BOTTOM || process.env.NEXT_PUBLIC_ADSENSE_SLOT_TOP;
 
 const normalizeExternalUrl = (value) => {
   if (!value) return "";
@@ -17,6 +20,21 @@ export default function BlogPostPage() {
   const params = useParams();
   const [blog, setBlog] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!adClient) return;
+
+    const slotsToRender = [blogSideAdSlot, blogSideAdSlot, blogBottomAdSlot].filter(Boolean);
+    if (!slotsToRender.length) return;
+
+    slotsToRender.forEach(() => {
+      try {
+        (window.adsbygoogle = window.adsbygoogle || []).push({});
+      } catch {
+        // Ignore ad rendering race conditions.
+      }
+    });
+  }, []);
 
   useEffect(() => {
     const load = async () => {
@@ -122,7 +140,7 @@ export default function BlogPostPage() {
         <div className="absolute bottom-0 left-1/2 h-64 w-[150%] -translate-x-1/2 rounded-t-[55%] bg-sky-500/20 blur-2xl" />
       </div>
 
-      <div className="relative z-10 mx-auto max-w-4xl">
+      <div className="relative z-10 mx-auto max-w-6xl">
         <div className="mb-4 flex flex-wrap items-center gap-2">
           <Link href="/" className="rounded-md border border-zinc-300/90 bg-white/95 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider hover:bg-white">
             Back Home
@@ -136,25 +154,66 @@ export default function BlogPostPage() {
           </button>
         </div>
 
-        <article className="rounded-xl border border-zinc-300 bg-white p-6 shadow-sm">
-          <p className="text-xs font-semibold uppercase tracking-widest text-zinc-600">{blog.category || "Seasonal"}</p>
-          <h1 className="mt-2 text-4xl font-bold text-zinc-950">{blog.title}</h1>
-
-          <div className="mt-5 max-h-[62vh] overflow-y-auto pr-2">
-            {renderBlogTextWithLinks(blog.excerpt)}
+        <div className="grid gap-4 md:grid-cols-[160px_minmax(0,1fr)_160px]">
+          <div className="hidden rounded-md border-2 border-black/70 bg-black/10 p-1 md:block">
+            {adClient && blogSideAdSlot ? (
+              <ins
+                className="adsbygoogle"
+                style={{ display: "block", minHeight: "420px" }}
+                data-ad-client={adClient}
+                data-ad-slot={blogSideAdSlot}
+                data-ad-format="vertical"
+                data-full-width-responsive="true"
+              />
+            ) : null}
           </div>
 
-          {blog.blogUrl ? (
-            <a
-              href={normalizeExternalUrl(blog.blogUrl)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-5 inline-block rounded-md bg-zinc-900 px-4 py-2 text-sm font-semibold text-white hover:bg-zinc-800"
-            >
-              Open Source Link
-            </a>
+          <article className="rounded-xl border border-zinc-300 bg-white p-6 shadow-sm">
+            <p className="text-xs font-semibold uppercase tracking-widest text-zinc-600">{blog.category || "Seasonal"}</p>
+            <h1 className="mt-2 text-4xl font-bold text-zinc-950">{blog.title}</h1>
+
+            <div className="mt-5 max-h-[62vh] overflow-y-auto pr-2">
+              {renderBlogTextWithLinks(blog.excerpt)}
+            </div>
+
+            {blog.blogUrl ? (
+              <a
+                href={normalizeExternalUrl(blog.blogUrl)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-5 inline-block rounded-md bg-zinc-900 px-4 py-2 text-sm font-semibold text-white hover:bg-zinc-800"
+              >
+                Open Source Link
+              </a>
+            ) : null}
+          </article>
+
+          <div className="hidden rounded-md border-2 border-black/70 bg-black/10 p-1 md:block">
+            {adClient && blogSideAdSlot ? (
+              <ins
+                className="adsbygoogle"
+                style={{ display: "block", minHeight: "420px" }}
+                data-ad-client={adClient}
+                data-ad-slot={blogSideAdSlot}
+                data-ad-format="vertical"
+                data-full-width-responsive="true"
+              />
+            ) : null}
+          </div>
+        </div>
+
+        <div className="mt-4 rounded-md border-2 border-black/70 bg-black/10 p-1">
+          {adClient && blogBottomAdSlot ? (
+            <ins
+              className="adsbygoogle"
+              style={{ display: "block", minHeight: "90px" }}
+              data-ad-client={adClient}
+              data-ad-slot={blogBottomAdSlot}
+              data-ad-format="horizontal"
+              data-full-width-responsive="true"
+            />
           ) : null}
-        </article>
+        </div>
       </div>
     </main>
   );

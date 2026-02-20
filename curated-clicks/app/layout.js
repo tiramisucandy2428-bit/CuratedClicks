@@ -1,6 +1,5 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import Script from "next/script";
-import TopAdBanner from "@/app/components/TopAdBanner";
 import "./globals.css";
 
 const adSenseClient = process.env.NEXT_PUBLIC_ADSENSE_CLIENT || "ca-pub-1603923202565384";
@@ -35,7 +34,6 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <TopAdBanner />
         {children}
       </body>
     </html>
