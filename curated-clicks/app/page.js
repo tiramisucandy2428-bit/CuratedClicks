@@ -19,6 +19,8 @@ export default function Home() {
   const [isNight, setIsNight] = useState(false);
   const [blogs, setBlogs] = useState([]);
   const [products, setProducts] = useState([]);
+  const [selectedBlogCategory, setSelectedBlogCategory] = useState(null);
+  const [openedBlogId, setOpenedBlogId] = useState(null);
 
   const trainRef = useRef(null);
   const steamRef = useRef(null);
@@ -90,6 +92,13 @@ export default function Home() {
     };
   }, []);
 
+  useEffect(() => {
+    if (activeSection !== "blog") {
+      setSelectedBlogCategory(null);
+      setOpenedBlogId(null);
+    }
+  }, [activeSection]);
+
   const current = sections.find((section) => section.id === activeSection) ?? sections[0];
   const blogsByNewest = [...blogs].sort((first, second) => (second.createdAt || 0) - (first.createdAt || 0));
   const pinnedBlogs = blogsByNewest.filter((blog) => blog.pinned).slice(0, 4);
@@ -105,6 +114,10 @@ export default function Home() {
       latest: latestByCategory,
     };
   });
+  const selectedCategoryBlogs = selectedBlogCategory
+    ? blogsByNewest.filter((blog) => (blog.category || "Seasonal") === selectedBlogCategory)
+    : [];
+  const openedBlog = openedBlogId ? blogsByNewest.find((blog) => blog.id === openedBlogId) : null;
 
   return (
     <main
@@ -181,24 +194,83 @@ export default function Home() {
           ) : null}
 
           {activeSection === "blog" ? (
-            <div className="mt-8 grid gap-3 sm:grid-cols-2">
-              {categoryCards.map((card, index) => (
-                <article
-                  key={card.id}
-                  className={`rounded-lg border border-zinc-300/20 bg-black/25 p-4 text-left backdrop-blur-[1px] blog-float blog-float-${index + 1} ${
-                    card.latest ? "" : "opacity-85"
-                  }`}
-                >
-                  <p className="text-[11px] uppercase tracking-widest text-amber-300">{card.category}</p>
-                  <h3 className="mt-1 text-base font-semibold text-zinc-100">
-                    {card.latest ? card.latest.title : "No posts yet"}
-                  </h3>
-                  <p className="mt-1 text-sm text-zinc-200/90">
-                    {card.latest ? card.latest.excerpt : "Fresh blog updates in this category will appear here."}
-                  </p>
-                  <p className="mt-2 text-xs text-zinc-300/80">{card.count} post{card.count === 1 ? "" : "s"}</p>
+            <div className="mt-8 text-left">
+              {!selectedBlogCategory ? (
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {categoryCards.map((card, index) => (
+                    <button
+                      key={card.id}
+                      type="button"
+                      onClick={() => {
+                        setSelectedBlogCategory(card.category);
+                        setOpenedBlogId(null);
+                      }}
+                      className={`rounded-lg border border-zinc-300/20 bg-black/25 p-4 text-left backdrop-blur-[1px] blog-float blog-float-${index + 1} transition hover:brightness-110 ${
+                        card.latest ? "" : "opacity-85"
+                      }`}
+                    >
+                      <p className="text-[11px] uppercase tracking-widest text-amber-300">{card.category}</p>
+                      <h3 className="mt-1 text-base font-semibold text-zinc-100">
+                        {card.latest ? card.latest.title : "No posts yet"}
+                      </h3>
+                      <p className="mt-1 text-sm text-zinc-200/90">
+                        {card.latest ? card.latest.excerpt : "Fresh blog updates in this category will appear here."}
+                      </p>
+                      <p className="mt-2 text-xs text-zinc-300/80">{card.count} post{card.count === 1 ? "" : "s"}</p>
+                    </button>
+                  ))}
+                </div>
+              ) : !openedBlog ? (
+                <div>
+                  <div className="mb-4 flex items-center justify-between gap-3">
+                    <h2 className="text-lg font-semibold text-amber-300">{selectedBlogCategory}</h2>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedBlogCategory(null);
+                        setOpenedBlogId(null);
+                      }}
+                      className="rounded-md border border-zinc-500/70 bg-black/25 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-zinc-100 hover:bg-black/40"
+                    >
+                      Back to Categories
+                    </button>
+                  </div>
+
+                  {selectedCategoryBlogs.length > 0 ? (
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      {selectedCategoryBlogs.map((blog) => (
+                        <button
+                          key={`heading-${blog.id}`}
+                          type="button"
+                          onClick={() => setOpenedBlogId(blog.id)}
+                          className="rounded-lg border border-zinc-300/20 bg-black/25 p-4 text-left backdrop-blur-[1px] transition hover:brightness-110"
+                        >
+                          <h3 className="text-base font-semibold text-zinc-100">{blog.title}</h3>
+                        </button>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-zinc-200/85">No blog posts in this category yet.</p>
+                  )}
+                </div>
+              ) : (
+                <article className="mx-auto max-w-3xl rounded-lg border border-zinc-300/20 bg-black/25 p-5 backdrop-blur-[1px]">
+                  <div className="mb-4 flex items-center justify-between gap-3">
+                    <p className="text-[11px] uppercase tracking-widest text-amber-300">
+                      {openedBlog.category || "Seasonal"}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => setOpenedBlogId(null)}
+                      className="rounded-md border border-zinc-500/70 bg-black/25 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-zinc-100 hover:bg-black/40"
+                    >
+                      Back to Headings
+                    </button>
+                  </div>
+                  <h3 className="text-2xl font-semibold text-zinc-100">{openedBlog.title}</h3>
+                  <p className="mt-3 text-base leading-relaxed text-zinc-200/95">{openedBlog.excerpt}</p>
                 </article>
-              ))}
+              )}
             </div>
           ) : null}
 
