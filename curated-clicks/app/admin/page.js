@@ -1,15 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
-  addBlogWithMeta,
+  addBlogWithMetaAndUrl,
   addProduct,
   BLOG_CATEGORIES,
   deleteBlog,
   deleteProduct,
+  exportBlogsBackup,
   getBlogs,
   getProducts,
+  importBlogsBackup,
   toggleBlogPin,
 } from "@/app/lib/contentStore";
 
@@ -21,8 +23,11 @@ export default function AdminDashboardPage() {
 
   const [blogTitle, setBlogTitle] = useState("");
   const [blogExcerpt, setBlogExcerpt] = useState("");
+  const [blogUrl, setBlogUrl] = useState("");
   const [blogCategory, setBlogCategory] = useState(BLOG_CATEGORIES[0]);
   const [blogPinned, setBlogPinned] = useState(false);
+  const [backupNotice, setBackupNotice] = useState("");
+  const restoreInputRef = useRef(null);
 
   const [productName, setProductName] = useState("");
   const [productDescription, setProductDescription] = useState("");
@@ -53,9 +58,10 @@ export default function AdminDashboardPage() {
 
   const createBlog = (event) => {
     event.preventDefault();
-    setBlogs(addBlogWithMeta(blogTitle.trim(), blogExcerpt.trim(), blogCategory, blogPinned));
+    setBlogs(addBlogWithMetaAndUrl(blogTitle.trim(), blogExcerpt.trim(), blogUrl.trim(), blogCategory, blogPinned));
     setBlogTitle("");
     setBlogExcerpt("");
+    setBlogUrl("");
     setBlogCategory(BLOG_CATEGORIES[0]);
     setBlogPinned(false);
   };
@@ -76,6 +82,40 @@ export default function AdminDashboardPage() {
     setProductPrice("");
     setProductUrl("");
     setProductImageUrl("");
+  };
+
+  const downloadBlogsBackup = () => {
+    const payload = exportBlogsBackup();
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    const datePart = new Date().toISOString().slice(0, 10);
+    anchor.href = url;
+    anchor.download = `curated-clicks-blogs-backup-${datePart}.json`;
+    document.body.appendChild(anchor);
+    anchor.click();
+    document.body.removeChild(anchor);
+    URL.revokeObjectURL(url);
+    setBackupNotice("Backup downloaded.");
+  };
+
+  const restoreBlogsBackupFile = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const raw = await file.text();
+      const parsed = JSON.parse(raw);
+      const restored = importBlogsBackup(parsed?.blogs);
+      setBlogs(restored);
+      setBackupNotice("Backup restored successfully.");
+    } catch {
+      setBackupNotice("Invalid backup file.");
+    } finally {
+      if (restoreInputRef.current) {
+        restoreInputRef.current.value = "";
+      }
+    }
   };
 
   const signOut = async () => {
@@ -102,7 +142,33 @@ export default function AdminDashboardPage() {
 
         <div className="grid gap-6 md:grid-cols-2">
           <section className="rounded-xl border border-zinc-700 bg-zinc-900 p-4">
-            <h2 className="text-lg font-semibold">Blogs</h2>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <h2 className="text-lg font-semibold">Blogs</h2>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={downloadBlogsBackup}
+                  className="rounded-md border border-zinc-600 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider hover:bg-zinc-800"
+                >
+                  Download Backup
+                </button>
+                <button
+                  type="button"
+                  onClick={() => restoreInputRef.current?.click()}
+                  className="rounded-md border border-zinc-600 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider hover:bg-zinc-800"
+                >
+                  Restore Backup
+                </button>
+                <input
+                  ref={restoreInputRef}
+                  type="file"
+                  accept="application/json"
+                  className="hidden"
+                  onChange={restoreBlogsBackupFile}
+                />
+              </div>
+            </div>
+            {backupNotice ? <p className="mt-2 text-xs text-zinc-300">{backupNotice}</p> : null}
             <form onSubmit={createBlog} className="mt-3 space-y-3">
               <input
                 className="w-full rounded-md border border-zinc-700 bg-zinc-950 px-3 py-2"
@@ -117,6 +183,12 @@ export default function AdminDashboardPage() {
                 value={blogExcerpt}
                 onChange={(event) => setBlogExcerpt(event.target.value)}
                 required
+              />
+              <input
+                className="w-full rounded-md border border-zinc-700 bg-zinc-950 px-3 py-2"
+                placeholder="Blog address (https://... or www....)"
+                value={blogUrl}
+                onChange={(event) => setBlogUrl(event.target.value)}
               />
               <select
                 className="w-full rounded-md border border-zinc-700 bg-zinc-950 px-3 py-2"
@@ -146,6 +218,7 @@ export default function AdminDashboardPage() {
                   <p className="font-semibold">{blog.title}</p>
                   <p className="mt-1 text-xs text-amber-300">{blog.category || "Seasonal"}</p>
                   <p className="mt-1 text-sm text-zinc-400">{blog.excerpt}</p>
+                  {blog.blogUrl ? <p className="mt-1 text-xs text-sky-300">{blog.blogUrl}</p> : null}
                   <button
                     onClick={() => setBlogs(toggleBlogPin(blog.id))}
                     className="mt-2 mr-3 text-sm text-sky-300 hover:text-sky-200"

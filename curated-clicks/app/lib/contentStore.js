@@ -8,6 +8,7 @@ const DEFAULT_CONTENT = {
       id: "b-1",
       title: "Welcome to Curated Clicks",
       excerpt: "Fresh updates and curated stories live here.",
+      blogUrl: "",
       category: "Seasonal",
       pinned: false,
       createdAt: 1739980800000,
@@ -18,6 +19,16 @@ const DEFAULT_CONTENT = {
 
 function hasWindow() {
   return typeof window !== "undefined";
+}
+
+function normalizeBlog(blog) {
+  return {
+    ...blog,
+    blogUrl: blog.blogUrl || "",
+    category: BLOG_CATEGORIES.includes(blog.category) ? blog.category : "Seasonal",
+    pinned: Boolean(blog.pinned),
+    createdAt: Number(blog.createdAt) || Number(blog.id?.replace("b-", "")) || Date.now(),
+  };
 }
 
 function readContent() {
@@ -32,12 +43,7 @@ function readContent() {
   try {
     const parsed = JSON.parse(raw);
     const normalizedBlogs = Array.isArray(parsed.blogs)
-      ? parsed.blogs.map((blog) => ({
-          ...blog,
-          category: BLOG_CATEGORIES.includes(blog.category) ? blog.category : "Seasonal",
-          pinned: Boolean(blog.pinned),
-          createdAt: Number(blog.createdAt) || Number(blog.id?.replace("b-", "")) || Date.now(),
-        }))
+      ? parsed.blogs.map((blog) => normalizeBlog(blog))
       : DEFAULT_CONTENT.blogs;
 
     const normalizedProducts = Array.isArray(parsed.products)
@@ -80,6 +86,7 @@ export function addBlog(title, excerpt) {
       id: `b-${createdAt}`,
       title,
       excerpt,
+      blogUrl: "",
       category: "Seasonal",
       pinned: false,
       createdAt,
@@ -91,6 +98,10 @@ export function addBlog(title, excerpt) {
 }
 
 export function addBlogWithMeta(title, excerpt, category, pinned) {
+  return addBlogWithMetaAndUrl(title, excerpt, "", category, pinned);
+}
+
+export function addBlogWithMetaAndUrl(title, excerpt, blogUrl, category, pinned) {
   const content = readContent();
   const createdAt = Date.now();
   content.blogs = [
@@ -98,6 +109,7 @@ export function addBlogWithMeta(title, excerpt, category, pinned) {
       id: `b-${createdAt}`,
       title,
       excerpt,
+      blogUrl,
       category: BLOG_CATEGORIES.includes(category) ? category : "Seasonal",
       pinned: Boolean(pinned),
       createdAt,
@@ -151,4 +163,32 @@ export function deleteProduct(id) {
   content.products = content.products.filter((product) => product.id !== id);
   writeContent(content);
   return content.products;
+}
+
+export function exportBlogsBackup() {
+  return {
+    exportedAt: Date.now(),
+    blogs: getBlogs(),
+  };
+}
+
+export function importBlogsBackup(backupBlogs) {
+  const content = readContent();
+  const safeBlogs = Array.isArray(backupBlogs)
+    ? backupBlogs
+        .map((blog, index) => {
+          const normalized = normalizeBlog(blog);
+          return {
+            ...normalized,
+            id: normalized.id || `b-${Date.now()}-${index}`,
+            title: normalized.title || "Untitled Blog",
+            excerpt: normalized.excerpt || "",
+          };
+        })
+        .sort((first, second) => (second.createdAt || 0) - (first.createdAt || 0))
+    : [];
+
+  content.blogs = safeBlogs;
+  writeContent(content);
+  return content.blogs;
 }

@@ -4,7 +4,14 @@ import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { BLOG_CATEGORIES, getBlogs, getProducts } from "@/app/lib/contentStore";
 
-const URL_REGEX = /(https?:\/\/[^\s]+)/g;
+const URL_REGEX = /(https?:\/\/[^\s]+|www\.[^\s]+)/g;
+
+const normalizeExternalUrl = (value) => {
+  if (!value) return "";
+  const trimmed = value.trim();
+  if (!trimmed) return "";
+  return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+};
 
 const sections = [
   { id: "home", label: "Home", heading: "Welcome Home" },
@@ -138,7 +145,7 @@ export default function Home() {
             return (
               <a
                 key={`link-${lineIndex}-${tokenIndex}`}
-                href={token}
+                href={normalizeExternalUrl(token)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="underline decoration-zinc-300/70 underline-offset-2 hover:text-amber-300"
@@ -242,7 +249,7 @@ export default function Home() {
                         card.count > 0 ? "" : "opacity-85"
                       }`}
                     >
-                      <p className="text-[11px] uppercase tracking-widest text-amber-300">{card.category}</p>
+                      <p className="text-xl font-bold uppercase tracking-wide text-amber-300 sm:text-2xl">{card.category}</p>
                       <p className="mt-2 text-3xl font-bold text-zinc-100">{card.count}</p>
                       <p className="mt-1 text-xs text-zinc-300/80">post{card.count === 1 ? "" : "s"}</p>
                     </button>
@@ -297,6 +304,16 @@ export default function Home() {
                   </div>
                   <h3 className="text-2xl font-semibold text-zinc-100">{openedBlog.title}</h3>
                   <div className="mt-3">{renderBlogTextWithLinks(openedBlog.excerpt)}</div>
+                  {openedBlog.blogUrl ? (
+                    <a
+                      href={normalizeExternalUrl(openedBlog.blogUrl)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-4 inline-block rounded-md bg-amber-500 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-zinc-950 hover:bg-amber-400"
+                    >
+                      Open Blog Link
+                    </a>
+                  ) : null}
                 </article>
               )}
             </div>
