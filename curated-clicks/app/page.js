@@ -64,13 +64,13 @@ export default function Home() {
         <div className="sky-gradient" />
         <div className="sun-glow" />
 
-        <div className="cloud cloud-one" />
-        <div className="cloud cloud-two" />
-        <div className="cloud cloud-three" />
+        <div className="cloud cloud-one"><span /></div>
+        <div className="cloud cloud-two"><span /></div>
+        <div className="cloud cloud-three"><span /></div>
 
-        <div className="bird bird-one" />
-        <div className="bird bird-two" />
-        <div className="bird bird-three" />
+        <div className="bird bird-one"><span /></div>
+        <div className="bird bird-two"><span /></div>
+        <div className="bird bird-three"><span /></div>
 
         <div className="hill hill-back" />
         <div className="hill hill-mid" />
@@ -101,8 +101,8 @@ export default function Home() {
 
       <nav className="fixed inset-x-0 bottom-0 z-40 px-4 pb-8 sm:px-8">
         <div className="mx-auto w-full max-w-5xl">
-          <div className="mb-1 h-px w-full bg-zinc-700/70" />
-          <div className="mb-3 h-px w-full bg-zinc-800/80" />
+          <div className="track-line mb-1 h-px w-full" />
+          <div className="track-line mb-3 h-px w-full opacity-65" />
 
           <div
             ref={trainRef}
@@ -113,20 +113,20 @@ export default function Home() {
               onClick={startJourney}
               className={`relative h-20 w-24 rounded-t-xl border-t-2 text-xs font-bold uppercase tracking-wider transition sm:w-28 ${
                 activeSection === "home"
-                  ? "border-amber-400 bg-zinc-700 text-amber-300"
-                  : "border-zinc-500 bg-zinc-800 text-zinc-200"
+                  ? "engine-active border-amber-400 text-amber-200"
+                  : "engine-body border-zinc-500 text-zinc-200"
               }`}
               aria-label="Go to home"
             >
-              <span className="absolute -top-5 left-1/2 h-5 w-3 -translate-x-1/2 rounded-sm bg-zinc-700" />
+              <span className="chimney absolute -top-5 left-1/2 h-5 w-3 -translate-x-1/2 rounded-sm" />
               <span
                 ref={steamRef}
                 className="pointer-events-none absolute -top-10 left-1/2 h-6 w-6 -translate-x-1/2 rounded-full bg-zinc-200/70 opacity-0 blur-[1px]"
               />
               <span className={`steam-puff steam-one ${isStarted ? "opacity-100" : "opacity-0"}`} />
               <span className={`steam-puff steam-two ${isStarted ? "opacity-100" : "opacity-0"}`} />
-              <span className="absolute left-3 right-3 top-4 h-2 rounded-sm bg-zinc-500/40" />
-              <span className="absolute bottom-7 left-3 right-3 h-1 rounded-sm bg-zinc-500/40" />
+              <span className="window-strip absolute left-3 right-3 top-4 h-2 rounded-sm" />
+              <span className="plate-strip absolute bottom-7 left-3 right-3 h-1 rounded-sm" />
               Home
               <span className="wheel wheel-left" />
               <span className="wheel wheel-right" />
@@ -145,14 +145,14 @@ export default function Home() {
                       disabled={!isStarted}
                       className={`relative h-16 w-20 rounded-t-lg border-t-2 text-[10px] font-semibold uppercase tracking-widest transition sm:w-24 sm:text-xs ${
                         isActive
-                          ? "border-amber-400 bg-zinc-700 text-amber-300 shadow-[0_0_14px_rgba(251,191,36,0.18)]"
+                          ? "car-active border-amber-400 text-amber-200 shadow-[0_0_14px_rgba(251,191,36,0.18)]"
                           : isStarted
-                            ? "border-zinc-500 bg-zinc-800 text-zinc-200 hover:bg-zinc-700"
+                            ? "car-body border-zinc-500 text-zinc-200 hover:brightness-110"
                             : "cursor-not-allowed border-zinc-700 bg-zinc-900 text-zinc-500"
                       }`}
                       aria-label={`Go to ${section.label}`}
                     >
-                      <span className="absolute left-2 right-2 top-3 h-1.5 rounded-sm bg-zinc-500/35" />
+                      <span className="window-strip absolute left-2 right-2 top-3 h-1.5 rounded-sm" />
                       {section.label}
                       <span className="wheel wheel-left" />
                       <span className="wheel wheel-right" />
@@ -168,7 +168,7 @@ export default function Home() {
         .sky-gradient {
           position: absolute;
           inset: 0;
-          background: linear-gradient(180deg, #60a5fa 0%, #0ea5e9 34%, #065f46 100%);
+          background: linear-gradient(180deg, #75b7ff 0%, #36b6ff 32%, #0b804d 100%);
         }
 
         .sun-glow {
@@ -184,32 +184,42 @@ export default function Home() {
 
         .cloud {
           position: absolute;
-          height: 26px;
+          height: 28px;
           border-radius: 9999px;
-          background: rgba(255, 255, 255, 0.68);
-          filter: blur(0.2px);
+          background: linear-gradient(180deg, rgba(255, 255, 255, 0.92) 0%, rgba(241, 245, 249, 0.72) 100%);
+          filter: drop-shadow(0 8px 10px rgba(15, 23, 42, 0.15));
         }
 
         .cloud::before,
-        .cloud::after {
-          content: "";
+        .cloud::after,
+        .cloud span {
           position: absolute;
           border-radius: 9999px;
-          background: rgba(255, 255, 255, 0.68);
+          background: linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(241, 245, 249, 0.7) 100%);
         }
 
         .cloud::before {
-          width: 28px;
-          height: 28px;
+          content: "";
+          width: 34px;
+          height: 34px;
           top: -12px;
-          left: 16px;
+          left: 12px;
         }
 
         .cloud::after {
-          width: 34px;
-          height: 34px;
-          top: -16px;
-          right: 16px;
+          content: "";
+          width: 40px;
+          height: 40px;
+          top: -18px;
+          right: 10px;
+        }
+
+        .cloud span {
+          content: "";
+          width: 26px;
+          height: 26px;
+          top: -8px;
+          right: 42%;
         }
 
         .cloud-one {
@@ -237,23 +247,39 @@ export default function Home() {
 
         .bird {
           position: absolute;
-          width: 16px;
-          height: 8px;
-          border-top: 2px solid rgba(24, 24, 27, 0.65);
-          border-right: 2px solid rgba(24, 24, 27, 0.65);
-          transform: rotate(-35deg);
+          width: 20px;
+          height: 9px;
+          border-top: 2px solid rgba(15, 23, 42, 0.62);
+          border-right: 2px solid rgba(15, 23, 42, 0.62);
+          border-radius: 90% 90% 0 0;
+          transform: rotate(-18deg);
+        }
+
+        .bird::after,
+        .bird span {
+          position: absolute;
+          width: 20px;
+          height: 9px;
+          border-top: 2px solid rgba(15, 23, 42, 0.62);
+          border-left: 2px solid rgba(15, 23, 42, 0.62);
+          border-radius: 90% 90% 0 0;
         }
 
         .bird::after {
           content: "";
-          position: absolute;
-          width: 16px;
-          height: 8px;
-          border-top: 2px solid rgba(24, 24, 27, 0.65);
-          border-left: 2px solid rgba(24, 24, 27, 0.65);
-          left: 13px;
-          top: -2px;
-          transform: rotate(70deg);
+          left: 16px;
+          top: -1px;
+          transform: rotate(24deg);
+        }
+
+        .bird span {
+          left: 8px;
+          top: 4px;
+          width: 8px;
+          height: 4px;
+          border: 0;
+          background: rgba(15, 23, 42, 0.5);
+          border-radius: 9999px;
         }
 
         .bird-one {
@@ -314,14 +340,26 @@ export default function Home() {
 
         .wheel {
           position: absolute;
-          bottom: -14px;
-          width: 14px;
-          height: 14px;
+          bottom: -15px;
+          width: 16px;
+          height: 16px;
           border-radius: 9999px;
-          border: 2px solid rgb(161 161 170);
-          background: rgb(24 24 27);
-          box-shadow: inset 0 0 0 2px rgb(63 63 70);
+          border: 2px solid rgb(212 212 216);
+          background: radial-gradient(circle at 35% 35%, rgb(82 82 91), rgb(24 24 27));
+          box-shadow: inset 0 0 0 2px rgb(63 63 70), 0 2px 2px rgba(0, 0, 0, 0.35);
           animation: wheelSpin 0.7s linear infinite;
+        }
+
+        .wheel::after {
+          content: "";
+          position: absolute;
+          left: 50%;
+          top: 50%;
+          width: 2px;
+          height: 12px;
+          background: rgba(228, 228, 231, 0.8);
+          transform: translate(-50%, -50%) rotate(45deg);
+          box-shadow: 0 0 0 0 transparent, 0 0 0 0 transparent;
         }
 
         .wheel-left {
@@ -340,9 +378,41 @@ export default function Home() {
           height: 10px;
           border-radius: 9999px;
           background: rgba(212, 212, 216, 0.8);
-          filter: blur(0.5px);
+          filter: blur(0.8px);
           pointer-events: none;
           transform: translateX(-50%);
+        }
+
+        .engine-body {
+          background: linear-gradient(180deg, #3f3f46 0%, #27272a 65%, #18181b 100%);
+        }
+
+        .engine-active {
+          background: linear-gradient(180deg, #52525b 0%, #2f2f35 62%, #1a1a1f 100%);
+        }
+
+        .car-body {
+          background: linear-gradient(180deg, #3f3f46 0%, #27272a 68%, #18181b 100%);
+        }
+
+        .car-active {
+          background: linear-gradient(180deg, #4b5563 0%, #2f2f35 62%, #1a1a1f 100%);
+        }
+
+        .chimney {
+          background: linear-gradient(180deg, #52525b 0%, #27272a 100%);
+        }
+
+        .window-strip {
+          background: linear-gradient(90deg, rgba(251, 191, 36, 0.15), rgba(251, 191, 36, 0.45), rgba(251, 191, 36, 0.15));
+        }
+
+        .plate-strip {
+          background: linear-gradient(90deg, rgba(161, 161, 170, 0.1), rgba(212, 212, 216, 0.45), rgba(161, 161, 170, 0.1));
+        }
+
+        .track-line {
+          background: linear-gradient(90deg, rgba(82, 82, 91, 0.2), rgba(161, 161, 170, 0.8), rgba(82, 82, 91, 0.2));
         }
 
         .steam-one {
@@ -409,17 +479,17 @@ export default function Home() {
 
         @keyframes birdFly {
           0% {
-            transform: translateX(0) translateY(0) scale(1) rotate(-35deg);
+            transform: translateX(0) translateY(0) scale(1) rotate(-18deg);
             opacity: 0;
           }
           8% {
             opacity: 1;
           }
           50% {
-            transform: translateX(55vw) translateY(-14px) scale(1.05) rotate(-35deg);
+            transform: translateX(55vw) translateY(-14px) scale(1.05) rotate(-18deg);
           }
           100% {
-            transform: translateX(calc(100vw + 140px)) translateY(6px) scale(0.98) rotate(-35deg);
+            transform: translateX(calc(100vw + 140px)) translateY(6px) scale(0.98) rotate(-18deg);
             opacity: 0.95;
           }
         }
