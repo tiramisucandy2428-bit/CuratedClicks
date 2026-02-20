@@ -4,6 +4,15 @@ import { getFirebaseDb } from "@/lib/firebaseAdmin";
 
 const BLOGS_COLLECTION = "blogs";
 
+async function resolveIdFromParams(paramsOrPromise) {
+  const params = await paramsOrPromise;
+  const value = params?.id;
+  if (Array.isArray(value)) {
+    return value[0] || "";
+  }
+  return value || "";
+}
+
 export async function PATCH(request, { params }) {
   if (!isAdminRequestAuthenticated(request)) {
     return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
@@ -14,7 +23,7 @@ export async function PATCH(request, { params }) {
     return NextResponse.json({ error: "Firebase is not configured." }, { status: 500 });
   }
 
-  const id = params?.id;
+  const id = await resolveIdFromParams(params);
   if (!id) {
     return NextResponse.json({ error: "Blog id is required." }, { status: 400 });
   }
