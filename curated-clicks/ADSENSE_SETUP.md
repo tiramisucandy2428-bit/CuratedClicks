@@ -7,7 +7,7 @@ This project now includes:
 ## Required environment variable
 
 Set in Vercel (or Render):
-- `NEXT_PUBLIC_ADSENSE_CLIENT=ca-pub-1603932202565384`
+- `NEXT_PUBLIC_ADSENSE_CLIENT=ca-pub-1603923202565384`
 - `NEXT_PUBLIC_ADSENSE_SLOT_TOP=<your-horizontal-ad-slot-id>`
 
 Get `NEXT_PUBLIC_ADSENSE_SLOT_TOP` from AdSense:
@@ -19,7 +19,7 @@ This project renders that unit at the top of every page.
 
 - Open: `https://curated-clicks.vercel.app/ads.txt`
 - Confirm it shows:
-  - `google.com, pub-1603932202565384, DIRECT, f08c47fec0942fa0`
+  - `google.com, pub-1603923202565384, DIRECT, f08c47fec0942fa0`
 
 ## AdSense dashboard status
 
