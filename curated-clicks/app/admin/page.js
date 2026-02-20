@@ -25,6 +25,8 @@ export default function AdminDashboardPage() {
   const [productName, setProductName] = useState("");
   const [productDescription, setProductDescription] = useState("");
   const [productPrice, setProductPrice] = useState("");
+  const [productUrl, setProductUrl] = useState("");
+  const [productImageUrl, setProductImageUrl] = useState("");
 
   useEffect(() => {
     if (!isAdminLoggedIn()) {
@@ -45,10 +47,20 @@ export default function AdminDashboardPage() {
 
   const createProduct = (event) => {
     event.preventDefault();
-    setProducts(addProduct(productName.trim(), productDescription.trim(), productPrice.trim()));
+    setProducts(
+      addProduct(
+        productName.trim(),
+        productDescription.trim(),
+        productPrice.trim(),
+        productUrl.trim(),
+        productImageUrl.trim()
+      )
+    );
     setProductName("");
     setProductDescription("");
     setProductPrice("");
+    setProductUrl("");
+    setProductImageUrl("");
   };
 
   const signOut = () => {
@@ -131,6 +143,22 @@ export default function AdminDashboardPage() {
                 onChange={(event) => setProductPrice(event.target.value)}
                 required
               />
+              <input
+                type="url"
+                className="w-full rounded-md border border-zinc-700 bg-zinc-950 px-3 py-2"
+                placeholder="Product link (https://...)"
+                value={productUrl}
+                onChange={(event) => setProductUrl(event.target.value)}
+                required
+              />
+              <input
+                type="url"
+                className="w-full rounded-md border border-zinc-700 bg-zinc-950 px-3 py-2"
+                placeholder="Image link (https://...)"
+                value={productImageUrl}
+                onChange={(event) => setProductImageUrl(event.target.value)}
+                required
+              />
               <button className="rounded-md bg-amber-500 px-4 py-2 font-semibold text-zinc-950 hover:bg-amber-400">
                 Add Product
               </button>
@@ -139,9 +167,22 @@ export default function AdminDashboardPage() {
             <ul className="mt-4 space-y-2">
               {products.map((product) => (
                 <li key={product.id} className="rounded-md border border-zinc-700 p-3">
+                  {product.imageUrl ? (
+                    <img src={product.imageUrl} alt={product.name} className="mb-2 h-24 w-full rounded-md object-cover" />
+                  ) : null}
                   <p className="font-semibold">{product.name}</p>
                   <p className="mt-1 text-sm text-zinc-400">{product.description}</p>
                   <p className="mt-1 text-sm text-amber-300">{product.price}</p>
+                  {product.productUrl ? (
+                    <a
+                      href={product.productUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-1 inline-block text-sm text-sky-300 hover:text-sky-200"
+                    >
+                      Open Product Link
+                    </a>
+                  ) : null}
                   <button
                     onClick={() => setProducts(deleteProduct(product.id))}
                     className="mt-2 text-sm text-rose-400 hover:text-rose-300"

@@ -143,9 +143,22 @@ export default function Home() {
             <div className="mt-8 grid gap-3 sm:grid-cols-2">
               {products.map((product) => (
                 <article key={product.id} className="rounded-lg border border-zinc-300/20 bg-black/25 p-4 text-left backdrop-blur-[1px]">
+                  {product.imageUrl ? (
+                    <img src={product.imageUrl} alt={product.name} className="mb-3 h-40 w-full rounded-md object-cover" />
+                  ) : null}
                   <h3 className="text-base font-semibold text-zinc-100">{product.name}</h3>
                   <p className="mt-1 text-sm text-zinc-200/90">{product.description}</p>
                   <p className="mt-2 text-sm font-semibold text-amber-300">{product.price}</p>
+                  {product.productUrl ? (
+                    <a
+                      href={product.productUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-3 inline-block rounded-md bg-amber-500 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-zinc-950 hover:bg-amber-400"
+                    >
+                      View Product
+                    </a>
+                  ) : null}
                 </article>
               ))}
             </div>

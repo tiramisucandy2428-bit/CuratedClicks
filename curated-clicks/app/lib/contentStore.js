@@ -6,7 +6,14 @@ const DEFAULT_CONTENT = {
     { id: "b-1", title: "Welcome to Curated Clicks", excerpt: "Fresh updates and curated stories live here." },
   ],
   products: [
-    { id: "p-1", name: "Starter Product", description: "A featured product slot for your launch.", price: "$49" },
+    {
+      id: "p-1",
+      name: "Starter Product",
+      description: "A featured product slot for your launch.",
+      price: "$49",
+      productUrl: "https://example.com/product",
+      imageUrl: "https://picsum.photos/seed/curated-product/600/400",
+    },
   ],
 };
 
@@ -28,9 +35,17 @@ function readContent() {
 
   try {
     const parsed = JSON.parse(raw);
+    const normalizedProducts = Array.isArray(parsed.products)
+      ? parsed.products.map((product) => ({
+          ...product,
+          productUrl: product.productUrl || "",
+          imageUrl: product.imageUrl || "",
+        }))
+      : DEFAULT_CONTENT.products;
+
     return {
       blogs: Array.isArray(parsed.blogs) ? parsed.blogs : DEFAULT_CONTENT.blogs,
-      products: Array.isArray(parsed.products) ? parsed.products : DEFAULT_CONTENT.products,
+      products: normalizedProducts,
     };
   } catch {
     window.localStorage.setItem(CONTENT_KEY, JSON.stringify(DEFAULT_CONTENT));
@@ -66,7 +81,7 @@ export function addBlog(title, excerpt) {
   return content.blogs;
 }
 
-export function addProduct(name, description, price) {
+export function addProduct(name, description, price, productUrl, imageUrl) {
   const content = readContent();
   content.products = [
     {
@@ -74,6 +89,8 @@ export function addProduct(name, description, price) {
       name,
       description,
       price,
+      productUrl,
+      imageUrl,
     },
     ...content.products,
   ];
