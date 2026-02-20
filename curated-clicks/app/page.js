@@ -59,7 +59,7 @@ export default function Home() {
   const current = sections.find((section) => section.id === activeSection) ?? sections[0];
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-sky-950 text-zinc-100">
+    <main className="relative min-h-screen overflow-hidden bg-zinc-950 text-zinc-100">
       <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
         <div className="sky-gradient" />
         <div className="sun-glow" />
@@ -170,7 +170,7 @@ export default function Home() {
         .sky-gradient {
           position: absolute;
           inset: 0;
-          background: linear-gradient(180deg, #7dc4ff 0%, #42bbff 34%, #0b3e74 100%);
+          background: linear-gradient(180deg, #1f2130 0%, #3f2a3a 30%, #b4532a 62%, #5b2a24 100%);
         }
 
         .sun-glow {
@@ -180,7 +180,7 @@ export default function Home() {
           width: 260px;
           height: 260px;
           border-radius: 9999px;
-          background: radial-gradient(circle, rgba(254, 240, 138, 0.6) 0%, rgba(254, 240, 138, 0.06) 60%, transparent 75%);
+          background: radial-gradient(circle, rgba(251, 146, 60, 0.62) 0%, rgba(251, 146, 60, 0.16) 58%, transparent 75%);
           animation: sunPulse 6s ease-in-out infinite;
         }
 
@@ -188,8 +188,8 @@ export default function Home() {
           position: absolute;
           height: 28px;
           border-radius: 9999px;
-          background: linear-gradient(180deg, rgba(255, 255, 255, 0.92) 0%, rgba(241, 245, 249, 0.72) 100%);
-          filter: drop-shadow(0 8px 10px rgba(15, 23, 42, 0.15));
+          background: linear-gradient(180deg, rgba(255, 237, 213, 0.84) 0%, rgba(252, 211, 167, 0.56) 100%);
+          filter: drop-shadow(0 8px 10px rgba(24, 24, 27, 0.22));
         }
 
         .cloud::before,
@@ -197,7 +197,7 @@ export default function Home() {
         .cloud span {
           position: absolute;
           border-radius: 9999px;
-          background: linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(241, 245, 249, 0.7) 100%);
+          background: linear-gradient(180deg, rgba(255, 237, 213, 0.82) 0%, rgba(252, 211, 167, 0.52) 100%);
         }
 
         .cloud::before {
@@ -315,7 +315,7 @@ export default function Home() {
           bottom: 86px;
           width: 150%;
           height: 280px;
-          background: linear-gradient(180deg, rgba(125, 211, 252, 0.5) 0%, rgba(30, 64, 175, 0.58) 100%);
+          background: linear-gradient(180deg, rgba(251, 146, 60, 0.28) 0%, rgba(37, 39, 78, 0.62) 100%);
           animation: waveShift 8s ease-in-out infinite;
         }
 
@@ -323,7 +323,7 @@ export default function Home() {
           bottom: 50px;
           width: 170%;
           height: 260px;
-          background: linear-gradient(180deg, rgba(56, 189, 248, 0.62) 0%, rgba(29, 78, 216, 0.72) 100%);
+          background: linear-gradient(180deg, rgba(249, 115, 22, 0.35) 0%, rgba(31, 41, 91, 0.76) 100%);
           animation: waveShift 6.5s ease-in-out infinite reverse;
         }
 
@@ -331,7 +331,7 @@ export default function Home() {
           bottom: 0;
           width: 200%;
           height: 210px;
-          background: linear-gradient(180deg, rgba(14, 165, 233, 0.78) 0%, rgba(30, 64, 175, 0.9) 100%);
+          background: linear-gradient(180deg, rgba(251, 146, 60, 0.36) 0%, rgba(30, 27, 75, 0.9) 100%);
           animation: waveShift 5.6s ease-in-out infinite;
         }
 
@@ -339,7 +339,7 @@ export default function Home() {
           position: absolute;
           height: 2px;
           border-radius: 9999px;
-          background: linear-gradient(90deg, transparent, rgba(226, 232, 240, 0.78), transparent);
+          background: linear-gradient(90deg, transparent, rgba(254, 215, 170, 0.78), transparent);
           opacity: 0.7;
           animation: glintMove 5s linear infinite;
         }
