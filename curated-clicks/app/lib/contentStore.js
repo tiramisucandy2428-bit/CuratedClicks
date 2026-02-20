@@ -1,5 +1,4 @@
 const CONTENT_KEY = "curated-clicks-content";
-const ADMIN_SESSION_KEY = "curated-clicks-admin-session";
 
 export const BLOG_CATEGORIES = ["Home Decors", "Gaming", "AI tools", "Seasonal"];
 
@@ -16,9 +15,6 @@ const DEFAULT_CONTENT = {
   ],
   products: [],
 };
-
-const ADMIN_USERNAME = "curatedcliks";
-const ADMIN_PASSWORD = "9065238298@Cu";
 
 function hasWindow() {
   return typeof window !== "undefined";
@@ -155,23 +151,4 @@ export function deleteProduct(id) {
   content.products = content.products.filter((product) => product.id !== id);
   writeContent(content);
   return content.products;
-}
-
-export function loginAdmin(username, password) {
-  if (!hasWindow()) return false;
-  const valid = username === ADMIN_USERNAME && password === ADMIN_PASSWORD;
-  if (valid) {
-    window.sessionStorage.setItem(ADMIN_SESSION_KEY, "true");
-  }
-  return valid;
-}
-
-export function isAdminLoggedIn() {
-  if (!hasWindow()) return false;
-  return window.sessionStorage.getItem(ADMIN_SESSION_KEY) === "true";
-}
-
-export function logoutAdmin() {
-  if (!hasWindow()) return;
-  window.sessionStorage.removeItem(ADMIN_SESSION_KEY);
 }

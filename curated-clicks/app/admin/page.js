@@ -10,8 +10,6 @@ import {
   deleteProduct,
   getBlogs,
   getProducts,
-  isAdminLoggedIn,
-  logoutAdmin,
   toggleBlogPin,
 } from "@/app/lib/contentStore";
 
@@ -33,13 +31,24 @@ export default function AdminDashboardPage() {
   const [productImageUrl, setProductImageUrl] = useState("");
 
   useEffect(() => {
-    if (!isAdminLoggedIn()) {
-      router.replace("/admin/login");
-      return;
-    }
-    setBlogs(getBlogs());
-    setProducts(getProducts());
-    setReady(true);
+    const checkSession = async () => {
+      try {
+        const response = await fetch("/api/admin/session", { method: "GET", credentials: "include" });
+        const data = await response.json();
+        if (!data?.authenticated) {
+          router.replace("/admin/login");
+          return;
+        }
+
+        setBlogs(getBlogs());
+        setProducts(getProducts());
+        setReady(true);
+      } catch {
+        router.replace("/admin/login");
+      }
+    };
+
+    checkSession();
   }, [router]);
 
   const createBlog = (event) => {
@@ -69,9 +78,12 @@ export default function AdminDashboardPage() {
     setProductImageUrl("");
   };
 
-  const signOut = () => {
-    logoutAdmin();
-    router.replace("/admin/login");
+  const signOut = async () => {
+    try {
+      await fetch("/api/admin/logout", { method: "POST", credentials: "include" });
+    } finally {
+      router.replace("/admin/login");
+    }
   };
 
   if (!ready) {

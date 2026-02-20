@@ -2,28 +2,57 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { isAdminLoggedIn, loginAdmin } from "@/app/lib/contentStore";
 
 export default function AdminLoginPage() {
   const router = useRouter();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (isAdminLoggedIn()) {
-      router.replace("/admin");
-    }
+    const checkSession = async () => {
+      try {
+        const response = await fetch("/api/admin/session", { method: "GET", credentials: "include" });
+        const data = await response.json();
+        if (data?.authenticated) {
+          router.replace("/admin");
+        }
+      } catch {
+        // keep login form available
+      }
+    };
+
+    checkSession();
   }, [router]);
 
-  const onSubmit = (event) => {
+  const onSubmit = async (event) => {
     event.preventDefault();
-    const ok = loginAdmin(username.trim(), password);
-    if (!ok) {
-      setError("Invalid credentials. Use your admin username/password.");
-      return;
+    setError("");
+    setLoading(true);
+
+    try {
+      const response = await fetch("/api/admin/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ username: username.trim(), password }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => null);
+        setError(data?.error || "Invalid credentials. Use your admin username/password.");
+        return;
+      }
+
+      router.push("/admin");
+    } catch {
+      setError("Login failed. Please try again.");
+    } finally {
+      setLoading(false);
     }
-    router.push("/admin");
   };
 
   return (
@@ -53,11 +82,11 @@ export default function AdminLoginPage() {
 
         <button
           type="submit"
-          className="mt-5 w-full rounded-md bg-amber-500 px-4 py-2 font-semibold text-zinc-950 transition hover:bg-amber-400"
+          disabled={loading}
+          className="mt-5 w-full rounded-md bg-amber-500 px-4 py-2 font-semibold text-zinc-950 transition hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-70"
         >
-          Sign In
+          {loading ? "Signing In..." : "Sign In"}
         </button>
-
       </form>
     </main>
   );
