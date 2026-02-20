@@ -59,14 +59,31 @@ export default function Home() {
   const current = sections.find((section) => section.id === activeSection) ?? sections[0];
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-zinc-950 text-zinc-100">
+    <main className="relative min-h-screen overflow-hidden bg-sky-950 text-zinc-100">
+      <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+        <div className="sky-gradient" />
+        <div className="sun-glow" />
+
+        <div className="cloud cloud-one" />
+        <div className="cloud cloud-two" />
+        <div className="cloud cloud-three" />
+
+        <div className="bird bird-one" />
+        <div className="bird bird-two" />
+        <div className="bird bird-three" />
+
+        <div className="hill hill-back" />
+        <div className="hill hill-mid" />
+        <div className="hill hill-front" />
+      </div>
+
       <section
         ref={contentRef}
-        className={`flex min-h-screen items-center justify-center px-6 pb-52 pt-16 transition-all duration-500 ${
+        className={`relative z-20 flex min-h-screen items-center justify-center px-6 pb-52 pt-16 transition-all duration-500 ${
           isStarted ? "blur-0 scale-100" : "blur-sm scale-[0.98]"
         }`}
       >
-        <h1 className="text-center text-4xl font-semibold tracking-wide text-zinc-100 sm:text-6xl">
+        <h1 className="text-center text-4xl font-semibold tracking-wide text-zinc-100 drop-shadow-[0_8px_24px_rgba(0,0,0,0.45)] sm:text-6xl">
           {current.heading}
         </h1>
       </section>
@@ -148,6 +165,145 @@ export default function Home() {
       </nav>
 
       <style jsx>{`
+        .sky-gradient {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(180deg, #60a5fa 0%, #0ea5e9 34%, #065f46 100%);
+        }
+
+        .sun-glow {
+          position: absolute;
+          top: 8%;
+          right: 10%;
+          width: 260px;
+          height: 260px;
+          border-radius: 9999px;
+          background: radial-gradient(circle, rgba(254, 240, 138, 0.6) 0%, rgba(254, 240, 138, 0.06) 60%, transparent 75%);
+          animation: sunPulse 6s ease-in-out infinite;
+        }
+
+        .cloud {
+          position: absolute;
+          height: 26px;
+          border-radius: 9999px;
+          background: rgba(255, 255, 255, 0.68);
+          filter: blur(0.2px);
+        }
+
+        .cloud::before,
+        .cloud::after {
+          content: "";
+          position: absolute;
+          border-radius: 9999px;
+          background: rgba(255, 255, 255, 0.68);
+        }
+
+        .cloud::before {
+          width: 28px;
+          height: 28px;
+          top: -12px;
+          left: 16px;
+        }
+
+        .cloud::after {
+          width: 34px;
+          height: 34px;
+          top: -16px;
+          right: 16px;
+        }
+
+        .cloud-one {
+          top: 14%;
+          width: 110px;
+          left: -120px;
+          animation: cloudDrift 28s linear infinite;
+        }
+
+        .cloud-two {
+          top: 20%;
+          width: 140px;
+          left: -180px;
+          opacity: 0.82;
+          animation: cloudDrift 36s linear infinite 5s;
+        }
+
+        .cloud-three {
+          top: 11%;
+          width: 90px;
+          left: -140px;
+          opacity: 0.74;
+          animation: cloudDrift 24s linear infinite 10s;
+        }
+
+        .bird {
+          position: absolute;
+          width: 16px;
+          height: 8px;
+          border-top: 2px solid rgba(24, 24, 27, 0.65);
+          border-right: 2px solid rgba(24, 24, 27, 0.65);
+          transform: rotate(-35deg);
+        }
+
+        .bird::after {
+          content: "";
+          position: absolute;
+          width: 16px;
+          height: 8px;
+          border-top: 2px solid rgba(24, 24, 27, 0.65);
+          border-left: 2px solid rgba(24, 24, 27, 0.65);
+          left: 13px;
+          top: -2px;
+          transform: rotate(70deg);
+        }
+
+        .bird-one {
+          top: 17%;
+          left: -24px;
+          animation: birdFly 18s linear infinite;
+        }
+
+        .bird-two {
+          top: 22%;
+          left: -44px;
+          transform: scale(0.8) rotate(-35deg);
+          animation: birdFly 22s linear infinite 4s;
+        }
+
+        .bird-three {
+          top: 13%;
+          left: -54px;
+          transform: scale(0.65) rotate(-35deg);
+          animation: birdFly 16s linear infinite 7s;
+        }
+
+        .hill {
+          position: absolute;
+          left: 50%;
+          transform: translateX(-50%);
+          border-radius: 50% 50% 0 0;
+        }
+
+        .hill-back {
+          bottom: 86px;
+          width: 150%;
+          height: 280px;
+          background: linear-gradient(180deg, rgba(74, 222, 128, 0.85) 0%, rgba(21, 128, 61, 0.9) 100%);
+        }
+
+        .hill-mid {
+          bottom: 50px;
+          width: 170%;
+          height: 260px;
+          background: linear-gradient(180deg, rgba(34, 197, 94, 0.95) 0%, rgba(22, 101, 52, 0.95) 100%);
+        }
+
+        .hill-front {
+          bottom: 0;
+          width: 200%;
+          height: 210px;
+          background: linear-gradient(180deg, rgba(22, 163, 74, 0.95) 0%, rgba(21, 94, 40, 0.98) 100%);
+        }
+
         .train-running {
           animation: trainBob 1.4s ease-in-out infinite;
         }
@@ -227,6 +383,44 @@ export default function Home() {
           }
           50% {
             transform: translateY(-2px);
+          }
+        }
+
+        @keyframes sunPulse {
+          0%,
+          100% {
+            transform: scale(1);
+            opacity: 0.85;
+          }
+          50% {
+            transform: scale(1.08);
+            opacity: 1;
+          }
+        }
+
+        @keyframes cloudDrift {
+          from {
+            transform: translateX(0);
+          }
+          to {
+            transform: translateX(calc(100vw + 320px));
+          }
+        }
+
+        @keyframes birdFly {
+          0% {
+            transform: translateX(0) translateY(0) scale(1) rotate(-35deg);
+            opacity: 0;
+          }
+          8% {
+            opacity: 1;
+          }
+          50% {
+            transform: translateX(55vw) translateY(-14px) scale(1.05) rotate(-35deg);
+          }
+          100% {
+            transform: translateX(calc(100vw + 140px)) translateY(6px) scale(0.98) rotate(-35deg);
+            opacity: 0.95;
           }
         }
       `}</style>
