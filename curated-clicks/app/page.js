@@ -297,9 +297,23 @@ export default function Home() {
           ) : null}
 
           {activeSection === "contact" ? (
-            <p className="mx-auto mt-6 max-w-xl text-sm text-zinc-100/90 sm:text-base">
-              Reach us for collaborations, product inquiries, and partnerships at contact@curatedclicks.com.
-            </p>
+            <div className="mx-auto mt-6 max-w-xl text-sm text-zinc-100/90 sm:text-base">
+              <p>Reach us for collaborations, product inquiries, and partnerships at contact@curatedclicks.com.</p>
+              <div className="mt-4 flex flex-wrap justify-center gap-3">
+                <Link
+                  href="/about"
+                  className="rounded-md border border-zinc-400/40 bg-black/30 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-zinc-100 hover:bg-black/45"
+                >
+                  About
+                </Link>
+                <Link
+                  href="/privacy-policy"
+                  className="rounded-md border border-zinc-400/40 bg-black/30 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-zinc-100 hover:bg-black/45"
+                >
+                  Privacy Policy
+                </Link>
+              </div>
+            </div>
           ) : null}
         </div>
       </section>
