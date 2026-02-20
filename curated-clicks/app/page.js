@@ -6,8 +6,8 @@ import { gsap } from "gsap";
 const sections = [
   { id: "home", label: "Home", heading: "Welcome Home" },
   { id: "blog", label: "Blog", heading: "Latest Clicks" },
-  { id: "tools", label: "Tools", heading: "Toolbox" },
-  { id: "reviews", label: "Reviews", heading: "Trusted Reviews" },
+  { id: "products", label: "Products", heading: "Featured Products" },
+  { id: "contact", label: "Contact Us", heading: "Contact Us" },
 ];
 
 const treePositions = [2, 9, 15, 23, 30, 38, 45, 52, 60, 67, 74, 82, 89, 97, 104, 112];
