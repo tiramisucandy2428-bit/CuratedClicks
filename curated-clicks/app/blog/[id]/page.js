@@ -76,8 +76,14 @@ export default function BlogPostPage() {
 
   if (!blog) {
     return (
-      <main className="min-h-screen bg-zinc-100 px-4 py-8 text-zinc-900">
-        <div className="mx-auto max-w-3xl rounded-xl border border-zinc-300 bg-white p-6">
+      <main className="relative min-h-screen overflow-hidden bg-zinc-950 px-4 py-8 text-zinc-900">
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-b from-indigo-950 via-purple-900/70 to-zinc-950" />
+          <div className="absolute -top-24 right-10 h-72 w-72 rounded-full bg-amber-300/25 blur-3xl" />
+          <div className="absolute bottom-0 left-1/2 h-64 w-[150%] -translate-x-1/2 rounded-t-[55%] bg-sky-500/20 blur-2xl" />
+        </div>
+
+        <div className="relative z-10 mx-auto max-w-3xl rounded-xl border border-zinc-300 bg-white p-6">
           <p className="text-sm text-zinc-700">This blog is not available on this device yet.</p>
           <p className="mt-2 text-sm text-zinc-700">If needed, restore your backup JSON from the admin dashboard.</p>
           <Link href="/" className="mt-4 inline-block text-sm font-semibold text-sky-700 hover:text-sky-600">
@@ -89,16 +95,22 @@ export default function BlogPostPage() {
   }
 
   return (
-    <main className="min-h-screen bg-zinc-100 px-4 py-8 text-zinc-900">
-      <div className="mx-auto max-w-4xl">
+    <main className="relative min-h-screen overflow-hidden bg-zinc-950 px-4 py-8 text-zinc-900">
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-indigo-950 via-purple-900/70 to-zinc-950" />
+        <div className="absolute -top-24 right-10 h-72 w-72 rounded-full bg-amber-300/25 blur-3xl" />
+        <div className="absolute bottom-0 left-1/2 h-64 w-[150%] -translate-x-1/2 rounded-t-[55%] bg-sky-500/20 blur-2xl" />
+      </div>
+
+      <div className="relative z-10 mx-auto max-w-4xl">
         <div className="mb-4 flex flex-wrap items-center gap-2">
-          <Link href="/" className="rounded-md border border-zinc-400 bg-white px-3 py-1.5 text-xs font-semibold uppercase tracking-wider hover:bg-zinc-50">
+          <Link href="/" className="rounded-md border border-zinc-300/90 bg-white/95 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider hover:bg-white">
             Back Home
           </Link>
           <button
             type="button"
             onClick={copyShareLink}
-            className="rounded-md border border-zinc-400 bg-white px-3 py-1.5 text-xs font-semibold uppercase tracking-wider hover:bg-zinc-50"
+            className="rounded-md border border-zinc-300/90 bg-white/95 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider hover:bg-white"
           >
             Copy Share Link
           </button>
