@@ -1,5 +1,9 @@
 import { Geist, Geist_Mono } from "next/font/google";
+import Script from "next/script";
+import TopAdBanner from "@/app/components/TopAdBanner";
 import "./globals.css";
+
+const adSenseClient = process.env.NEXT_PUBLIC_ADSENSE_CLIENT || "ca-pub-1603932202565384";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -19,9 +23,19 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
+      <head>
+        <Script
+          id="adsense-script"
+          async
+          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adSenseClient}`}
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <TopAdBanner />
         {children}
       </body>
     </html>
