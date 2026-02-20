@@ -404,7 +404,7 @@ export default function Home() {
         </div>
       </nav>
 
-      <div className="pointer-events-none fixed inset-x-0 bottom-10 z-[45] h-24 overflow-hidden sm:bottom-7">
+      <div className="pointer-events-none fixed inset-x-0 bottom-8 z-[45] h-24 overflow-hidden sm:bottom-7">
         <div className="forest-row forest-row-one">
           {treePositions.map((position, index) => (
             <div
