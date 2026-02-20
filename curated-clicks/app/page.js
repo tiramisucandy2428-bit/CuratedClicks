@@ -138,13 +138,13 @@ export default function Home() {
               }`}
               aria-label="Go to home"
             >
-              <span className="chimney absolute -top-5 left-1/2 h-5 w-3 -translate-x-1/2 rounded-sm" />
+              <span className="chimney absolute -top-5 left-[68%] h-5 w-3 -translate-x-1/2 rounded-sm" />
               <span
                 ref={steamRef}
-                className="pointer-events-none absolute -top-10 left-1/2 h-6 w-6 -translate-x-1/2 rounded-full bg-zinc-200/70 opacity-0 blur-[1px]"
+                className="smoke-origin pointer-events-none absolute -top-10 h-6 w-6 -translate-x-1/2 rounded-full bg-zinc-200/70 opacity-0 blur-[1px]"
               />
-              <span className={`steam-puff steam-one ${isStarted ? "opacity-100" : "opacity-0"}`} />
-              <span className={`steam-puff steam-two ${isStarted ? "opacity-100" : "opacity-0"}`} />
+              <span className={`smoke-origin steam-puff steam-one ${isStarted ? "opacity-100" : "opacity-0"}`} />
+              <span className={`smoke-origin steam-puff steam-two ${isStarted ? "opacity-100" : "opacity-0"}`} />
               <span className="window-strip absolute left-3 right-3 top-4 h-2 rounded-sm" />
               <span className="plate-strip absolute bottom-7 left-3 right-3 h-1 rounded-sm" />
               Home
@@ -173,6 +173,9 @@ export default function Home() {
                       aria-label={`Go to ${section.label}`}
                     >
                       <span className="window-strip absolute left-2 right-2 top-3 h-1.5 rounded-sm" />
+                      <span className="bogey-window window-left" />
+                      <span className="bogey-window window-mid" />
+                      <span className="bogey-window window-right" />
                       {section.label}
                       <span className="wheel wheel-left" />
                       <span className="wheel wheel-right" />
@@ -233,6 +236,8 @@ export default function Home() {
           --water-glint: rgba(254, 215, 170, 0.78);
           --tree-crown: rgba(20, 83, 45, 0.92);
           --tree-trunk: rgba(68, 32, 10, 0.9);
+          --bogey-window: rgba(148, 163, 184, 0.45);
+          --bogey-window-glow: 0 0 0 rgba(0, 0, 0, 0);
         }
 
         .scene-night {
@@ -255,6 +260,8 @@ export default function Home() {
           --water-glint: rgba(191, 219, 254, 0.58);
           --tree-crown: rgba(15, 23, 42, 0.92);
           --tree-trunk: rgba(30, 41, 59, 0.88);
+          --bogey-window: rgba(251, 191, 36, 0.9);
+          --bogey-window-glow: 0 0 10px rgba(251, 191, 36, 0.6);
         }
 
         .sky-gradient {
@@ -539,6 +546,35 @@ export default function Home() {
           background: linear-gradient(90deg, rgba(82, 82, 91, 0.2), rgba(161, 161, 170, 0.8), rgba(82, 82, 91, 0.2));
         }
 
+        .bogey-window {
+          position: absolute;
+          top: 6px;
+          width: 9px;
+          height: 6px;
+          border-radius: 2px;
+          background: var(--bogey-window);
+          box-shadow: var(--bogey-window-glow);
+          transition: background 350ms ease, box-shadow 350ms ease;
+          border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .window-left {
+          left: 15%;
+        }
+
+        .window-mid {
+          left: 50%;
+          transform: translateX(-50%);
+        }
+
+        .window-right {
+          right: 15%;
+        }
+
+        .smoke-origin {
+          left: 68%;
+        }
+
         .forest-row {
           position: absolute;
           inset: 0;
@@ -723,7 +759,7 @@ export default function Home() {
             transform: translateX(0);
           }
           100% {
-            transform: translateX(-16%);
+            transform: translateX(16%);
           }
         }
       `}</style>
