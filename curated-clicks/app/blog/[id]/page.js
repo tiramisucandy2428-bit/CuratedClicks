@@ -1,9 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
-import { useParams, useSearchParams } from "next/navigation";
-import { getBlogs } from "@/app/lib/contentStore";
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
 
 const URL_REGEX = /(https?:\/\/[^\s]+|www\.[^\s]+)/g;
 
@@ -16,76 +15,34 @@ const normalizeExternalUrl = (value) => {
 
 export default function BlogPostPage() {
   const params = useParams();
-  const searchParams = useSearchParams();
-  const [blogs, setBlogs] = useState([]);
+  const [blog, setBlog] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const load = () => setBlogs(getBlogs());
-    load();
-
-    const onStorage = () => load();
-    const onContentUpdated = () => load();
-    window.addEventListener("storage", onStorage);
-    window.addEventListener("curated-clicks-content-updated", onContentUpdated);
-
-    return () => {
-      window.removeEventListener("storage", onStorage);
-      window.removeEventListener("curated-clicks-content-updated", onContentUpdated);
-    };
-  }, []);
-
-  const sharedBlog = useMemo(() => {
-    const raw = searchParams.get("data");
-    if (!raw) return null;
-
-    try {
-      const decoded = decodeURIComponent(window.atob(raw));
-      const parsed = JSON.parse(decoded);
-      if (!parsed?.title || !parsed?.excerpt) {
-        return null;
+    const load = async () => {
+      if (!params?.id) {
+        setLoading(false);
+        return;
       }
 
-      return {
-        id: parsed.id || params?.id,
-        title: parsed.title,
-        excerpt: parsed.excerpt,
-        category: parsed.category || "Seasonal",
-        blogUrl: parsed.blogUrl || "",
-      };
-    } catch {
-      return null;
-    }
-  }, [params?.id, searchParams]);
+      const response = await fetch(`/api/blogs/${params.id}`, { method: "GET", cache: "no-store" }).catch(() => null);
+      if (!response?.ok) {
+        setBlog(null);
+        setLoading(false);
+        return;
+      }
 
-  const blog = useMemo(() => {
-    const local = blogs.find((item) => item.id === params?.id);
-    return local || sharedBlog;
-  }, [blogs, params?.id, sharedBlog]);
+      const data = await response.json().catch(() => null);
+      setBlog(data?.blog || null);
+      setLoading(false);
+    };
 
-  const buildShareUrl = () => {
-    if (!blog) return window.location.href;
-
-    try {
-      const encoded = window.btoa(
-        encodeURIComponent(
-          JSON.stringify({
-            id: blog.id,
-            title: blog.title,
-            excerpt: blog.excerpt,
-            category: blog.category,
-            blogUrl: blog.blogUrl,
-          })
-        )
-      );
-      return `${window.location.origin}/blog/${blog.id}?data=${encodeURIComponent(encoded)}`;
-    } catch {
-      return window.location.href;
-    }
-  };
+    load();
+  }, [params?.id]);
 
   const copyShareLink = async () => {
     try {
-      await navigator.clipboard.writeText(buildShareUrl());
+      await navigator.clipboard.writeText(window.location.href);
       alert("Post link copied.");
     } catch {
       alert("Could not copy link.");
@@ -122,6 +79,22 @@ export default function BlogPostPage() {
     });
   };
 
+  if (loading) {
+    return (
+      <main className="relative min-h-screen overflow-hidden bg-zinc-950 px-4 py-8 text-zinc-900">
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-b from-indigo-950 via-purple-900/70 to-zinc-950" />
+          <div className="absolute -top-24 right-10 h-72 w-72 rounded-full bg-amber-300/25 blur-3xl" />
+          <div className="absolute bottom-0 left-1/2 h-64 w-[150%] -translate-x-1/2 rounded-t-[55%] bg-sky-500/20 blur-2xl" />
+        </div>
+
+        <div className="relative z-10 mx-auto max-w-3xl rounded-xl border border-zinc-300 bg-white p-6">
+          <p className="text-sm text-zinc-700">Loading post...</p>
+        </div>
+      </main>
+    );
+  }
+
   if (!blog) {
     return (
       <main className="relative min-h-screen overflow-hidden bg-zinc-950 px-4 py-8 text-zinc-900">
@@ -132,8 +105,7 @@ export default function BlogPostPage() {
         </div>
 
         <div className="relative z-10 mx-auto max-w-3xl rounded-xl border border-zinc-300 bg-white p-6">
-          <p className="text-sm text-zinc-700">This blog is not available on this device yet.</p>
-          <p className="mt-2 text-sm text-zinc-700">If needed, restore your backup JSON from the admin dashboard.</p>
+          <p className="text-sm text-zinc-700">This post is not available.</p>
           <Link href="/" className="mt-4 inline-block text-sm font-semibold text-sky-700 hover:text-sky-600">
             ← Back to Home
           </Link>

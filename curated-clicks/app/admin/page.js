@@ -3,16 +3,10 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
-  addBlogWithMetaAndUrl,
   addProduct,
   BLOG_CATEGORIES,
-  deleteBlog,
   deleteProduct,
-  exportBlogsBackup,
-  getBlogs,
   getProducts,
-  importBlogsBackup,
-  toggleBlogPin,
 } from "@/app/lib/contentStore";
 
 export default function AdminDashboardPage() {
@@ -45,7 +39,9 @@ export default function AdminDashboardPage() {
           return;
         }
 
-        setBlogs(getBlogs());
+        const blogsResponse = await fetch("/api/blogs", { method: "GET", credentials: "include" });
+        const blogsData = await blogsResponse.json();
+        setBlogs(Array.isArray(blogsData?.blogs) ? blogsData.blogs : []);
         setProducts(getProducts());
         setReady(true);
       } catch {
@@ -56,9 +52,35 @@ export default function AdminDashboardPage() {
     checkSession();
   }, [router]);
 
-  const createBlog = (event) => {
+  const refreshBlogs = async () => {
+    const response = await fetch("/api/blogs", { method: "GET", credentials: "include" });
+    const data = await response.json();
+    setBlogs(Array.isArray(data?.blogs) ? data.blogs : []);
+  };
+
+  const createBlog = async (event) => {
     event.preventDefault();
-    setBlogs(addBlogWithMetaAndUrl(blogTitle.trim(), blogExcerpt.trim(), blogUrl.trim(), blogCategory, blogPinned));
+    const response = await fetch("/api/admin/blogs", {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        title: blogTitle.trim(),
+        excerpt: blogExcerpt.trim(),
+        blogUrl: blogUrl.trim(),
+        category: blogCategory,
+        pinned: blogPinned,
+      }),
+    });
+
+    if (!response.ok) {
+      setBackupNotice("Could not save blog post.");
+      return;
+    }
+
+    await refreshBlogs();
     setBlogTitle("");
     setBlogExcerpt("");
     setBlogUrl("");
@@ -85,7 +107,10 @@ export default function AdminDashboardPage() {
   };
 
   const downloadBlogsBackup = () => {
-    const payload = exportBlogsBackup();
+    const payload = {
+      exportedAt: Date.now(),
+      blogs,
+    };
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement("a");
@@ -106,8 +131,20 @@ export default function AdminDashboardPage() {
     try {
       const raw = await file.text();
       const parsed = JSON.parse(raw);
-      const restored = importBlogsBackup(parsed?.blogs);
-      setBlogs(restored);
+      const response = await fetch("/api/admin/blogs/import", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ blogs: parsed?.blogs }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Restore failed");
+      }
+
+      await refreshBlogs();
       setBackupNotice("Backup restored successfully.");
     } catch {
       setBackupNotice("Invalid backup file.");
@@ -220,13 +257,29 @@ export default function AdminDashboardPage() {
                   <p className="mt-1 text-sm text-zinc-400">{blog.excerpt}</p>
                   {blog.blogUrl ? <p className="mt-1 text-xs text-sky-300">{blog.blogUrl}</p> : null}
                   <button
-                    onClick={() => setBlogs(toggleBlogPin(blog.id))}
+                    onClick={async () => {
+                      await fetch(`/api/admin/blogs/${blog.id}/pin`, {
+                        method: "PATCH",
+                        credentials: "include",
+                        headers: {
+                          "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({ pinned: !blog.pinned }),
+                      });
+                      await refreshBlogs();
+                    }}
                     className="mt-2 mr-3 text-sm text-sky-300 hover:text-sky-200"
                   >
                     {blog.pinned ? "Unpin" : "Pin"}
                   </button>
                   <button
-                    onClick={() => setBlogs(deleteBlog(blog.id))}
+                    onClick={async () => {
+                      await fetch(`/api/admin/blogs/${blog.id}`, {
+                        method: "DELETE",
+                        credentials: "include",
+                      });
+                      await refreshBlogs();
+                    }}
                     className="mt-2 text-sm text-rose-400 hover:text-rose-300"
                   >
                     Delete
