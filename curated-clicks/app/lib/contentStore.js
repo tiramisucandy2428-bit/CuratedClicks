@@ -5,16 +5,7 @@ const DEFAULT_CONTENT = {
   blogs: [
     { id: "b-1", title: "Welcome to Curated Clicks", excerpt: "Fresh updates and curated stories live here." },
   ],
-  products: [
-    {
-      id: "p-1",
-      name: "Starter Product",
-      description: "A featured product slot for your launch.",
-      price: "$49",
-      productUrl: "https://example.com/product",
-      imageUrl: "https://picsum.photos/seed/curated-product/600/400",
-    },
-  ],
+  products: [],
 };
 
 const ADMIN_USERNAME = "curatedcliks";
@@ -40,7 +31,7 @@ function readContent() {
           ...product,
           productUrl: product.productUrl || "",
           imageUrl: product.imageUrl || "",
-        }))
+        })).filter((product) => product.id !== "p-1")
       : DEFAULT_CONTENT.products;
 
     return {
